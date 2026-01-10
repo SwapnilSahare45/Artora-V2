@@ -1,0 +1,121 @@
+"use client";
+
+import Link from "next/link";
+import Button from "../atoms/Button";
+import Input from "../atoms/Input";
+import { FaGithub, FaGoogle } from "react-icons/fa";
+import { useForm } from "react-hook-form";
+import { useRouter } from "next/navigation";
+
+const LoginForm = () => {
+  const router = useRouter();
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm();
+
+  const onFormSubmit = async (data: any) => {
+    try {
+      const response = await fetch("http://localhost:4500/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+        credentials: "include",
+      });
+
+      if (response.ok) {
+        reset();
+        router.replace("/artworks");
+      }
+    } catch (error) {
+      console.error("Login failed", error);
+    }
+  };
+
+  return (
+    <div className="w-full">
+      <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-8">
+        <div className="space-y-6">
+          <Input
+            label="Email Address"
+            type="email"
+            placeholder="collector@artora.com"
+            {...register("email", { required: "Email is required" })}
+            error={errors.email?.message as string}
+          />
+
+          <div className="space-y-2">
+            <Input
+              label="Password"
+              type="password"
+              placeholder="••••••••"
+              {...register("password", { required: "Password is required" })}
+              error={errors.password?.message as string}
+            />
+
+            <div className="flex justify-end">
+              <Link
+                href="/forgot-password"
+                className="text-[10px] uppercase tracking-[0.2em] text-dim hover:text-brand transition-all duration-300"
+              >
+                Reset Credentials?
+              </Link>
+            </div>
+          </div>
+        </div>
+
+        <Button title={"Enter Gallery"} type="submit" className="h-14 w-full" />
+      </form>
+
+      {/* Separator */}
+      <div className="relative flex items-center py-10" aria-hidden="true">
+        <div className="grow border-t border-glass"></div>
+        <span className="shrink mx-6 text-[10px] font-jakarta font-bold uppercase tracking-[0.3em] text-dim">
+          Fast Track
+        </span>
+        <div className="grow border-t border-glass"></div>
+      </div>
+
+      <div className="flex flex-col sm:flex-row gap-4 w-full">
+        <Button
+          title="Google"
+          ariaLabel="Login with Google"
+          variant="outline"
+          icon={
+            <FaGoogle className="text-muted group-hover:text-brand transition-colors" />
+          }
+          iconPosition="left"
+          className="flex-1 h-14 border-glass hover:border-brand/50 transition-all duration-700"
+        />
+
+        <Button
+          title="GitHub"
+          ariaLabel="Login with GitHub"
+          variant="outline"
+          icon={
+            <FaGithub className="text-muted group-hover:text-brand transition-colors" />
+          }
+          iconPosition="left"
+          className="flex-1 h-14 border-glass hover:border-brand/50 transition-all duration-700"
+        />
+      </div>
+
+      <div className="mt-10 text-center">
+        <p className="font-jakarta text-[11px] text-muted uppercase tracking-widest">
+          New to the collection?{" "}
+          <Link
+            href="/register"
+            className="font-bold hover:text-brand hover:underline hover:underline-offset-8 transition-all duration-500"
+          >
+            Create Artist Profile
+          </Link>
+        </p>
+      </div>
+    </div>
+  );
+};
+
+export default LoginForm;
