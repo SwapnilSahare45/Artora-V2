@@ -75,7 +75,7 @@ const RegisterForm = () => {
       verifyOTPState.result.user.verified === true
     ) {
       otpReset();
-      router.push("/artworks");
+      router.replace("/login");
     }
   }, [verifyOTPState.success, verifyOTPState.result?.user.verified]);
 
