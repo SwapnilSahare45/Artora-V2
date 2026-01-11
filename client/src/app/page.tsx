@@ -5,9 +5,10 @@ import LayoutToggle from "@/components/atoms/LayoutToggle";
 import ArtistSpotlight from "@/components/molecules/ArtistsSpotlight";
 import ArtworkLayoutMode from "@/components/molecules/ArtworkLayoutMode";
 import Footer from "@/components/molecules/Footer";
-import Navbar from "@/components/molecules/Navbar";
 import Image from "next/image";
 import Link from "next/link";
+import { headers } from "next/headers";
+import NavbarServer from "@/components/molecules/NavbarServer";
 
 export const metadata: Metadata = {
   title: "Artora | Curated Luxury Art & Digital Masterpieces",
@@ -15,7 +16,10 @@ export const metadata: Metadata = {
     "Discover and acquire rare artworks from elite independent creators globally through Artora's high-stakes auction protocol.",
 };
 
-export default function Home() {
+export default async function Home() {
+  const headersList = await headers();
+  const userRole = headersList.get("x-user-role");
+
   const visualNavigation = [
     { name: "Abstract", slug: "abstract", image: "/abstract.webp" },
     { name: "Digital Art", slug: "digital-art", image: "/digitalart.webp" },
@@ -23,7 +27,7 @@ export default function Home() {
     { name: "Traditional", slug: "traditional", image: "/traditional.webp" },
   ];
 
-  const howItWorks = [
+  const collectorSteps = [
     {
       step: "01",
       title: "Discover",
@@ -36,14 +40,33 @@ export default function Home() {
     },
     {
       step: "03",
-      title: "Authenticate",
-      info: "Every acquisition is backed by a digital certificate of authenticity and white-glove shipping.",
+      title: "Receive",
+      info: "Every acquisition is handled with care, featuring insured worldwide shipping and white-glove delivery.",
+    },
+  ];
+  const artistSteps = [
+    {
+      step: "01",
+      title: "Exhibit",
+      info: "Upload your high-resolution masterpieces to our digital gallery and reach elite global collectors.",
+    },
+    {
+      step: "02",
+      title: "Auction",
+      info: "Launch high-stakes auctions with custom reserves and watch live bidding wars in real-time.",
+    },
+    {
+      step: "03",
+      title: "Prosper",
+      info: "Bypass traditional galleries with sub-second payment settlement and transparent revenue tracking.",
     },
   ];
 
+  const activeSteps = userRole === "artist" ? artistSteps : collectorSteps;
+
   return (
     <>
-      <Navbar />
+      <NavbarServer />
       <main>
         {/* Hero section */}
         <section
@@ -67,17 +90,32 @@ export default function Home() {
             </p>
 
             <div className="flex flex-wrap items-center gap-6 pt-4">
-              <Button
-                title="Explore Collection"
-                ariaLabel="View our curated art collection"
-                className="px-10 h-14 shadow-neon"
-              />
-              <Button
-                title="Sell Your Art"
-                ariaLabel="Learn about becoming an Artora creator"
-                variant="outline"
-                className="px-10 h-14"
-              />
+              <Link href={"/artworks"}>
+                <Button
+                  title="Explore Collection"
+                  ariaLabel="View our curated art collection"
+                  className="px-10 h-14 shadow-neon"
+                />
+              </Link>
+              {userRole === "artists" ? (
+                <Link href={"/dashboard/artist/deposit"}>
+                  <Button
+                    title="Sell Your Art"
+                    ariaLabel="Access your artist dashboard to sell art"
+                    variant="outline"
+                    className="px-10 h-14"
+                  />
+                </Link>
+              ) : (
+                <Link href={"/auctions"}>
+                  <Button
+                    title="Explore Auctions"
+                    ariaLabel="View live and upcoming art auctions"
+                    variant="outline"
+                    className="px-10 h-14"
+                  />
+                </Link>
+              )}
             </div>
           </div>
 
@@ -189,11 +227,8 @@ export default function Home() {
         </section>
 
         {/* How it Works */}
-        <section
-          className="max-w-7xl mx-auto py-40 px-6 grid grid-cols-1 md:grid-cols-3 gap-16 border-t border-glass"
-          aria-label="Our Process"
-        >
-          {howItWorks.map((item, idx) => (
+        <section className="max-w-7xl mx-auto py-40 px-6 grid grid-cols-1 md:grid-cols-3 gap-16 border-t border-glass">
+          {activeSteps.map((item, idx) => (
             <div key={idx} className="space-y-8 group">
               <span
                 className="text-7xl font-luxury text-white/10 group-hover:text-brand transition-all duration-700 block italic"
@@ -224,14 +259,47 @@ export default function Home() {
           />
           <div className="space-y-10 px-6 relative z-10 flex flex-col items-center">
             <h2 className="text-5xl md:text-7xl font-luxury leading-tight">
-              Find a piece that <br />
-              <span className="italic text-brand">speaks to your soul.</span>
+              {userRole ? (
+                <>
+                  Ready to discover <br />
+                  <span className="italic text-brand">
+                    your next acquisition?
+                  </span>
+                </>
+              ) : (
+                <>
+                  Find a piece that <br />
+                  <span className="italic text-brand">
+                    speaks to your soul.
+                  </span>
+                </>
+              )}
             </h2>
-            <Button
-              title="Become a Collector"
-              ariaLabel="Sign up to become a collector"
-              className="h-16 px-16 shadow-neon"
-            />
+            {!userRole ? (
+              <Link href="/register">
+                <Button
+                  title="Become a Collector"
+                  ariaLabel="Sign up to become a collector"
+                  className="h-16 px-16 shadow-neon"
+                />
+              </Link>
+            ) : userRole === "artist" ? (
+              <Link href="/dashboard/artist/create-artwork">
+                <Button
+                  title="List New Masterpiece"
+                  ariaLabel="Go to artist dashboard to list artwork"
+                  className="h-16 px-16 shadow-neon"
+                />
+              </Link>
+            ) : (
+              <Link href="/artworks">
+                <Button
+                  title="View New Arrivals"
+                  ariaLabel="Browse the latest curated collection"
+                  className="h-16 px-16 shadow-neon"
+                />
+              </Link>
+            )}
           </div>
         </section>
       </main>

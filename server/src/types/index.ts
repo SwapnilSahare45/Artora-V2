@@ -1,3 +1,5 @@
+import { Request } from "express";
+
 // =============== User Types ===============
 export interface IUser {
   firstName: string;
@@ -50,4 +52,12 @@ export interface IUserUpdateInput {
   lastName?: string;
   bio?: string;
   avatar?: string;
+}
+
+// Auth Request
+export interface AuthRequest extends Request {
+  user?: {
+    userId: string;
+    role: string;
+  };
 }

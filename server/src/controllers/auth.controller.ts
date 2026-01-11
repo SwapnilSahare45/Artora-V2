@@ -1,14 +1,22 @@
 import { Request, Response } from "express";
-import { IRegisterInput } from "../types";
+import { AuthRequest, ILoginInput, IRegisterInput } from "../types";
 import { User } from "../models/user.model";
 import { generateOTP } from "../utils/generateOTP";
 import { OTP } from "../models/otp.model";
 import { sendOTP } from "../utils/email";
+import { generateToken } from "../utils/jwt";
 
 export const register = async (req: Request, res: Response) => {
   try {
     const { firstName, lastName, email, password, role }: IRegisterInput =
       req.body;
+
+    if (!firstName || !lastName || !email || !password || !role) {
+      return res.status(400).json({
+        success: false,
+        error: "All fields required",
+      });
+    }
 
     const otp = generateOTP();
 
@@ -198,4 +206,88 @@ export const resendOTP = async (req: Request, res: Response) => {
       error: error.message || "Server error",
     });
   }
+};
+
+export const login = async (req: Request, res: Response) => {
+  try {
+    const { email, password }: ILoginInput = req.body;
+
+    if (!email || !password) {
+      return res.status(400).json({
+        success: false,
+        error: "Email & Password are required",
+      });
+    }
+
+    const user = await User.findOne({ email }).select("+password");
+    if (!user || !(await user.comparePassword(password))) {
+      return res.status(401).json({
+        success: false,
+        error: "Invalid credentials",
+      });
+    }
+
+    if (!user.verified) {
+      return res.status(403).json({
+        success: false,
+        error: "Please verify your email before logging in",
+      });
+    }
+    const token = generateToken(user._id.toString(), user.role);
+
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: false,
+      sameSite: "lax",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: `welcome back, ${user.firstName}`,
+      user: {
+        _id: user._id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        role: user.role,
+      },
+    });
+  } catch (error: any) {
+    return res.status(500).json({
+      success: false,
+      error: error.message || "Server error",
+    });
+  }
+};
+
+export const logout = async (req: Request, res: Response) => {
+  try {
+    res.clearCookie("token", {
+      httpOnly: true,
+      secure: false,
+      sameSite: "lax",
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Logged out successfully",
+    });
+  } catch (error: any) {
+    return res.status(500).json({
+      success: false,
+      error: error.message || "Server error",
+    });
+  }
+};
+
+export const authenticatedUser = (req: AuthRequest, res: Response) => {
+  return res.status(200).json({
+    success: true,
+    isAuthenticated: true,
+    user: {
+      userId: req.user?.userId,
+      role: req.user?.role,
+    },
+  });
 };

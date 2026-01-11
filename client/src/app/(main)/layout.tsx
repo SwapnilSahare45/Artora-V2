@@ -1,5 +1,5 @@
 import Footer from "@/components/molecules/Footer";
-import Navbar from "@/components/molecules/Navbar";
+import Navbar from "@/components/molecules/NavbarClient";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
