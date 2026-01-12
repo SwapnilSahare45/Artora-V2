@@ -4,14 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Logo from "../atoms/Logo";
 import Button from "../atoms/Button";
-import {
-  LuMenu,
-  LuX,
-  LuChevronRight,
-  LuLogOut,
-  LuUser,
-  LuPalette,
-} from "react-icons/lu";
+import { LuMenu, LuX, LuChevronRight, LuUser, LuPalette } from "react-icons/lu";
 import LogoutButton from "../atoms/LogoutButton";
 
 interface NavbarProps {
@@ -29,8 +22,8 @@ const NavbarClient = ({ userRole }: NavbarProps) => {
   ];
 
   const collectorLinks = [
-    { name: "Live Floor", href: "/auctions" },
     { name: "Collection", href: "/artworks" },
+    { name: "Live Floor", href: "/auctions" },
     { name: "My Bids", href: "/dashboard/collector/bids" },
     { name: "Artists", href: "/artists" },
   ];
@@ -113,7 +106,7 @@ const NavbarClient = ({ userRole }: NavbarProps) => {
                   </Link>
                 ) : (
                   <Link
-                    href="/dashboard/collector"
+                    href={`/dashboard/${userRole}`}
                     className="font-jakarta text-[10px] uppercase tracking-[0.2em] text-dim hover:text-brand transition-colors flex items-center gap-2"
                   >
                     <LuUser size={14} /> My Profile
@@ -185,12 +178,7 @@ const NavbarClient = ({ userRole }: NavbarProps) => {
 
             <div className="pt-8 border-t border-glass space-y-4">
               {userRole ? (
-                <Link
-                  href="/logout"
-                  className="flex items-center gap-3 text-red-400 font-jakarta text-sm uppercase tracking-widest"
-                >
-                  <LuLogOut size={18} /> Logout
-                </Link>
+                <LogoutButton />
               ) : (
                 <>
                   <Link

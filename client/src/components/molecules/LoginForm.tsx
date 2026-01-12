@@ -5,11 +5,9 @@ import Button from "../atoms/Button";
 import Input from "../atoms/Input";
 import { FaGithub, FaGoogle } from "react-icons/fa";
 import { useForm } from "react-hook-form";
-import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 const LoginForm = () => {
-  const router = useRouter();
-
   const {
     register,
     handleSubmit,
@@ -18,7 +16,7 @@ const LoginForm = () => {
   } = useForm();
 
   const onFormSubmit = async (data: any) => {
-    try {
+    const loginPromise = async () => {
       const response = await fetch("http://localhost:4500/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -26,13 +24,24 @@ const LoginForm = () => {
         credentials: "include",
       });
 
-      if (response.ok) {
-        reset();
-        router.replace("/artworks");
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || "Access Denied");
       }
-    } catch (error) {
-      console.error("Login failed", error);
-    }
+
+      reset();
+
+      window.location.href = "/artworks";
+
+      return result;
+    };
+
+    toast.promise(loginPromise(), {
+      loading: "Validating Credentials...",
+      success: (data) => `Welcome back, ${data.user.firstName}.`,
+      error: (err) => `${err.message}`,
+    });
   };
 
   return (

@@ -1,5 +1,10 @@
 import { Request, Response } from "express";
-import { AuthRequest, ILoginInput, IRegisterInput } from "../types";
+import {
+  AuthRequest,
+  ILoginInput,
+  IRegisterInput,
+  IUserResponse,
+} from "../types";
 import { User } from "../models/user.model";
 import { generateOTP } from "../utils/generateOTP";
 import { OTP } from "../models/otp.model";
@@ -267,6 +272,7 @@ export const logout = async (req: Request, res: Response) => {
       httpOnly: true,
       secure: false,
       sameSite: "lax",
+      path: "/",
     });
 
     return res.status(200).json({
@@ -290,4 +296,35 @@ export const authenticatedUser = (req: AuthRequest, res: Response) => {
       role: req.user?.role,
     },
   });
+};
+
+export const getLoggedInUser = async (req: AuthRequest, res: Response) => {
+  try {
+    const userId = req.user?.userId;
+    if (!userId) {
+      return res.status(401).json({
+        success: false,
+        message: "Unauthorized: No user ID found in request",
+      });
+    }
+
+    const user: IUserResponse | null = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      user,
+    });
+  } catch (error: any) {
+    return res.status(500).json({
+      success: false,
+      error: error.message || "Server error",
+    });
+  }
 };

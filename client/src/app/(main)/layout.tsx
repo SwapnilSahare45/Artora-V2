@@ -1,5 +1,5 @@
 import Footer from "@/components/molecules/Footer";
-import Navbar from "@/components/molecules/NavbarClient";
+import NavbarServer from "@/components/molecules/NavbarServer";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 const MainLayout = ({ children }: Readonly<{ children: React.ReactNode }>) => {
   return (
     <div className="flex flex-col min-h-screen">
-      <Navbar />
+      <NavbarServer />
 
       <main className="grow pt-20 focus:outline-none">{children}</main>
 

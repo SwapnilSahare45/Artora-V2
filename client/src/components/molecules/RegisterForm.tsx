@@ -13,6 +13,7 @@ import {
   resendOTPAction,
   verifyOTPAction,
 } from "@/app/actions/auth";
+import { toast } from "sonner";
 
 const RegisterForm = () => {
   const router = useRouter();
@@ -59,25 +60,54 @@ const RegisterForm = () => {
   const selectedRole = watch("role");
 
   useEffect(() => {
+    if (registerUserState.error) {
+      toast.error(registerUserState.error);
+    }
+
     if (
       registerUserState.success &&
       registerUserState.result.user.verified === false
     ) {
+      toast.success("Identity initialized. Verify your email.");
       // Reset coundown when switching to OTP screen
       setCountdownKey((prev) => prev + 1);
       reset();
     }
-  }, [registerUserState.success, registerUserState.result?.user.verified]);
+  }, [
+    registerUserState.success,
+    registerUserState.error,
+    registerUserState.result?.user.verified,
+    reset,
+  ]);
 
   useEffect(() => {
+    if (verifyOTPState.error) {
+      toast.error(verifyOTPState.error);
+    }
     if (
       verifyOTPState.success &&
       verifyOTPState.result.user.verified === true
     ) {
+      toast.success("Email verified. Welcome to Artora.");
       otpReset();
       router.replace("/login");
     }
-  }, [verifyOTPState.success, verifyOTPState.result?.user.verified]);
+  }, [
+    verifyOTPState.success,
+    verifyOTPState.error,
+    verifyOTPState.result?.user.verified,
+    otpReset,
+    router,
+  ]);
+
+  useEffect(() => {
+    if (resendOTPState.error) {
+      toast.error(resendOTPState.error);
+    }
+    if (resendOTPState.success) {
+      toast.info("A new security key has been dispatched.");
+    }
+  }, [resendOTPState.success, resendOTPState.error]);
 
   const onRegisterFormSubmit = (data: any) => {
     startTransition(() => {

@@ -94,7 +94,7 @@ const Footer = () => {
           <div className="flex items-center gap-3">
             <LuUser size={14} className="text-brand" aria-hidden="true" />
             <p className="text-[9px] uppercase tracking-[0.3em]">
-              Lead: Swapnil Vinod Sahare
+              Design & Develop: Swapnil Vinod Sahare
             </p>
           </div>
           <div className="flex items-center gap-3">
@@ -107,7 +107,7 @@ const Footer = () => {
 
         <div className="flex flex-col md:flex-row justify-between items-center gap-8">
           <p className="text-[9px] uppercase tracking-[0.4em] text-dim">
-            &copy; 2026 Artora Protocol
+            &copy; 2026 Artora
           </p>
           <div className="flex gap-10">
             <Link

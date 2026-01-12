@@ -45,7 +45,7 @@ export async function verifyOTPAction(prevState: any, data: any) {
     if (!response.ok) {
       return {
         success: false,
-        error: result.error || "Verification failed",
+        error: result.error || "Invalid security key",
       };
     }
 
@@ -53,8 +53,11 @@ export async function verifyOTPAction(prevState: any, data: any) {
       success: true,
       result,
     };
-  } catch (error) {
-    return { success: false, error: "OTP verification failed" };
+  } catch (error: any) {
+    return {
+      success: false,
+      error: error.message || "OTP verification failed",
+    };
   }
 }
 

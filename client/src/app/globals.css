@@ -22,8 +22,9 @@
   --color-surface-hover: var(--bg-tertiary);
   --color-glass: var(--border-glass);
 
-  --font-heading: var(--font-luxury);
-  --font-body: var(--font-jakarta);
+  --font-luxury: var(--font-luxury);
+  --font-jakarta: var(--font-jakarta);
+  --font-inter: var(--font-inter);
 
   --shadow-neon: 0 0 20px rgba(124, 58, 237, 0.2);
   --shadow-glass: 0 8px 32px 0 rgba(0, 0, 0, 0.8);
@@ -32,7 +33,7 @@
 body {
   background-color: var(--bg-primary);
   color: var(--text-main);
-  font-family: var(--font-body);
+  font-family: var(--font-jakarta);
   letter-spacing: -0.01em;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
@@ -50,8 +51,8 @@ body {
   border-radius: 10px;
 }
 
-.luxury-heading {
-  font-family: var(--font-heading);
+/* .luxury-heading {
+  font-family: var(--font-luxury);
   font-style: italic;
   font-weight: 700;
-}
+} */
