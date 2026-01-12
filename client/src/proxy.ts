@@ -5,33 +5,25 @@ export async function proxy(request: NextRequest) {
   const token = request.cookies.get("token");
   const { pathname } = request.nextUrl;
 
+  // Check authentication status
+  const authResult = token ? await isAuthenticated(token.value) : null;
+  const requestHeaders = new Headers(request.headers);
+  const userRole = authResult?.user?.role;
+
+  if (authResult?.isAuthenticated && authResult.user) {
+    requestHeaders.set("x-user-id", authResult.user.userId);
+    requestHeaders.set("x-user-role", authResult.user.role);
+  }
+
+  // Define Route Categories
   const publicRoutes = ["/artworks"];
   const authRoutes = ["/login", "/register"];
-  const protectedRoutes = [
-    "/artists",
-    "/auctions",
-    "/checkout",
-    "/dashboard",
-    "/admin",
-  ];
 
   const isHomePage = pathname === "/";
   const isPublicRoute = publicRoutes.some((route) =>
     pathname.startsWith(route)
   );
   const isAuthRoute = authRoutes.some((route) => pathname.startsWith(route));
-  const isProtectedRoute = protectedRoutes.some((route) =>
-    pathname.startsWith(route)
-  );
-
-  // Check authentication status
-  const authResult = token ? await isAuthenticated(token.value) : null;
-
-  const requestHeaders = new Headers(request.headers);
-  if (authResult?.isAuthenticated && authResult.user) {
-    requestHeaders.set("x-user-id", authResult.user.userId);
-    requestHeaders.set("x-user-role", authResult.user.role);
-  }
 
   // Allow public routes for everyone
   if (isHomePage || isPublicRoute) {
@@ -40,21 +32,62 @@ export async function proxy(request: NextRequest) {
     });
   }
 
-  // If user logged in and trying to access auth page redirect them to artworks
-  if (isAuthRoute && authResult?.isAuthenticated) {
-    return NextResponse.redirect(new URL("/artworks", request.url));
-  }
-
-  // If user is not logged in and trying to access auth pages allow them
-  if (isAuthRoute && !authResult?.isAuthenticated) {
+  // Handle Auth Routes
+  if (isAuthRoute) {
+    if (authResult?.isAuthenticated) {
+      return NextResponse.redirect(new URL("/artworks", request.url));
+    }
     return NextResponse.next();
   }
 
-  // If user is not logged in and trying to access protected routes redirect to login
-  if (!token || !authResult?.isAuthenticated) {
+  // Global Authentication Check for all other routes
+  if (!authResult?.isAuthenticated) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
+  // Role-Based Access Control
+
+  // Helper for "Not Found" illusion
+  // Using "rewrite" to keep the URL exactly same to make it page simply doesn't exit at all
+  const notFound = () => NextResponse.rewrite(new URL("/404", request.url));
+
+  // Admin can access everything
+  if (userRole === "admin") {
+    return NextResponse.next({ request: { headers: requestHeaders } });
+  }
+
+  // Artist cannot access /checkout or /dashboard/collector
+  if (userRole === "artist") {
+    const forbiddenForArtists = ["/checkout", "/dashboard/collector"];
+    if (forbiddenForArtists.some((route) => pathname.startsWith(route))) {
+      // For redirect to /artworks
+      // return NextResponse.redirect(new URL("/artworks", request.url));
+
+      // For Not Found illusion
+      return notFound();
+    }
+  }
+
+  //Collector cannot access /dashboard/artist
+  if (userRole === "collector") {
+    const forbiddenForCollector = ["/dashboard/artist"];
+    if (forbiddenForCollector.some((route) => pathname.startsWith(route))) {
+      // For redirect to /artworks
+      // return NextResponse.redirect(new URL("/artworks", request.url));
+
+      // For Not Found illusion
+      return notFound();
+    }
+  }
+
+  // Admin route protection
+  if (pathname.startsWith("/admin") && userRole !== "admin") {
+    // For redirect to /artworks
+    // return NextResponse.redirect(new URL("/artworks", request.url));
+
+    // For Not Found illusion
+    return notFound();
+  }
   return NextResponse.next({
     request: {
       headers: requestHeaders,
@@ -63,5 +96,15 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
+  matcher: [
+    /*
+     * Match all request paths except for the ones starting with:
+     * - api (API routes)
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico (favicon file)
+     * - Common image extensions (webp, png, jpg, svg, etc.)
+     */
+    "/((?!api|_next/static|_next/image|favicon.ico|.*\\.(?:webp|png|jpg|jpeg|gif|svg|svgz|ico|tiff|bmp)).*)",
+  ],
 };
