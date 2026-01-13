@@ -19,7 +19,7 @@ export const register = async (req: Request, res: Response) => {
     if (!firstName || !lastName || !email || !password || !role) {
       return res.status(400).json({
         success: false,
-        error: "All fields required",
+        error: "All identity parameters are required to initialize membership.",
       });
     }
 
@@ -33,7 +33,7 @@ export const register = async (req: Request, res: Response) => {
       if (user.verified) {
         return res.status(400).json({
           success: false,
-          error: "Email already exists",
+          error: "This identity is already archived in the Artora network.",
         });
       }
 
@@ -64,7 +64,8 @@ export const register = async (req: Request, res: Response) => {
     // Send response
     res.status(201).json({
       success: true,
-      message: "Registration successful. Please verify your email.",
+      message:
+        "Identity initialized. Please authorize via the security key sent to your email.",
       user: {
         _id: user._id,
         firstName: user.firstName,
@@ -81,7 +82,8 @@ export const register = async (req: Request, res: Response) => {
   } catch (error: any) {
     return res.status(500).json({
       success: false,
-      error: error.message || "Server error",
+      error:
+        "Membership initialization protocol failed. Please try again later.",
     });
   }
 };
@@ -93,7 +95,7 @@ export const verifyOTP = async (req: Request, res: Response) => {
     if (!email || !otp) {
       return res.status(400).json({
         success: false,
-        error: "Email and OTP are required",
+        error: "Identity and security key are required for authorization.",
       });
     }
 
@@ -102,7 +104,7 @@ export const verifyOTP = async (req: Request, res: Response) => {
     if (!otpRecord) {
       return res.status(400).json({
         success: false,
-        error: "Invalid or expired OTP",
+        error: "The provided security key is invalid or has expired.",
       });
     }
 
@@ -116,7 +118,7 @@ export const verifyOTP = async (req: Request, res: Response) => {
     if (!user) {
       return res.status(404).json({
         success: false,
-        error: "User not found or already verified",
+        error: "Identity not found or already verified in the network.",
       });
     }
 
@@ -126,7 +128,7 @@ export const verifyOTP = async (req: Request, res: Response) => {
     // Send resposne
     return res.status(200).json({
       success: true,
-      message: "Email verified successfully",
+      message: "Email verified. Welcome to the Artora ecosystem.",
       user: {
         _id: user._id,
         firstName: user.firstName,
@@ -139,7 +141,7 @@ export const verifyOTP = async (req: Request, res: Response) => {
   } catch (error: any) {
     return res.status(500).json({
       success: false,
-      error: error.message || "Server error",
+      error: "Verification protocol failure. Integrity check failed.",
     });
   }
 };
@@ -151,7 +153,7 @@ export const resendOTP = async (req: Request, res: Response) => {
     if (!email) {
       return res.status(400).json({
         success: false,
-        error: "Email is required",
+        error: "Identity email is required to dispatch a new security key.",
       });
     }
 
@@ -160,7 +162,7 @@ export const resendOTP = async (req: Request, res: Response) => {
     if (!user) {
       return res.status(404).json({
         success: false,
-        error: "User not found",
+        error: "No matching identity found in our archives.",
       });
     }
 
@@ -168,7 +170,7 @@ export const resendOTP = async (req: Request, res: Response) => {
     if (user.verified) {
       return res.status(400).json({
         success: false,
-        error: "Email is already verified",
+        error: "Identity is already verified. No further action required.",
       });
     }
 
@@ -184,7 +186,7 @@ export const resendOTP = async (req: Request, res: Response) => {
         );
         return res.status(429).json({
           success: false,
-          error: `Please wait ${remainingTime} seconds before requesting a new OTP`,
+          error: `Security protocol in cooldown. Please wait ${remainingTime} seconds.`,
         });
       }
     }
@@ -198,7 +200,7 @@ export const resendOTP = async (req: Request, res: Response) => {
     // Send response
     res.status(200).json({
       success: true,
-      message: "OTP has been resent to your email",
+      message: "A new security key has been dispatched to your email.",
     });
 
     // Send email in background
@@ -208,7 +210,7 @@ export const resendOTP = async (req: Request, res: Response) => {
   } catch (error: any) {
     return res.status(500).json({
       success: false,
-      error: error.message || "Server error",
+      error: "Key dispatch protocol failure.",
     });
   }
 };
@@ -220,7 +222,7 @@ export const login = async (req: Request, res: Response) => {
     if (!email || !password) {
       return res.status(400).json({
         success: false,
-        error: "Email & Password are required",
+        error: "Access credentials are required.",
       });
     }
 
@@ -228,28 +230,28 @@ export const login = async (req: Request, res: Response) => {
     if (!user || !(await user.comparePassword(password))) {
       return res.status(401).json({
         success: false,
-        error: "Invalid credentials",
+        error: "Invalid access credentials. Unauthorized entry detected.",
       });
     }
 
     if (!user.verified) {
       return res.status(403).json({
         success: false,
-        error: "Please verify your email before logging in",
+        error: "Access denied. Please verify your identity first.",
       });
     }
     const token = generateToken(user._id.toString(), user.role);
 
     res.cookie("token", token, {
       httpOnly: true,
-      secure: false,
+      secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
     return res.status(200).json({
       success: true,
-      message: `welcome back, ${user.firstName}`,
+      message: `Vault accessed. Welcome back, ${user.firstName}.`,
       user: {
         _id: user._id,
         firstName: user.firstName,
@@ -261,7 +263,7 @@ export const login = async (req: Request, res: Response) => {
   } catch (error: any) {
     return res.status(500).json({
       success: false,
-      error: error.message || "Server error",
+      error: "Authentication protocol failure.",
     });
   }
 };
@@ -270,19 +272,19 @@ export const logout = async (req: Request, res: Response) => {
   try {
     res.clearCookie("token", {
       httpOnly: true,
-      secure: false,
+      secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
       path: "/",
     });
 
     return res.status(200).json({
       success: true,
-      message: "Logged out successfully",
+      message: "Vault secured. Session terminated.",
     });
   } catch (error: any) {
     return res.status(500).json({
       success: false,
-      error: error.message || "Server error",
+      error: "Session termination protocol failure.",
     });
   }
 };
@@ -304,7 +306,8 @@ export const getLoggedInUser = async (req: AuthRequest, res: Response) => {
     if (!userId) {
       return res.status(401).json({
         success: false,
-        message: "Unauthorized: No user ID found in request",
+        message:
+          "Access denied. No active session found in the Artora network.",
       });
     }
 
@@ -313,18 +316,21 @@ export const getLoggedInUser = async (req: AuthRequest, res: Response) => {
     if (!user) {
       return res.status(404).json({
         success: false,
-        message: "User not found",
+        message:
+          "Identity synchronization failure. Matching archival record not found.",
       });
     }
 
     return res.status(200).json({
       success: true,
+      message: "Identity synchronized successfully.",
       user,
     });
   } catch (error: any) {
     return res.status(500).json({
       success: false,
-      error: error.message || "Server error",
+      error:
+        "Identity retrieval protocol failure. Internal synchronization error.",
     });
   }
 };
