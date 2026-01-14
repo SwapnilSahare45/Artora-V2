@@ -1,6 +1,6 @@
 "use client";
 
-import { LuCamera, LuCheck, LuGlobe, LuInstagram } from "react-icons/lu";
+import { LuCamera, LuCheck } from "react-icons/lu";
 import Input from "../atoms/Input";
 import Image from "next/image";
 import Button from "../atoms/Button";
@@ -11,7 +11,10 @@ import { useRouter } from "next/navigation";
 
 const ArtistProfileForm = ({ user }: { user: any }) => {
   const router = useRouter();
+
+  // Preview image URL for avatar before upload
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  // Button loading state
   const [isUpdating, setIsUpdating] = useState(false);
 
   const {
@@ -28,34 +31,44 @@ const ArtistProfileForm = ({ user }: { user: any }) => {
     },
   });
 
+  // Watching form fields for real-time preview
   const watchedFirstName = watch("firstName");
   const watchedLastName = watch("lastName");
   const watchedBio = watch("bio");
 
+  // Handle avatar preview when file is selected
   const handleFilePreview = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      if (previewUrl) URL.revokeObjectURL(previewUrl);
-      setPreviewUrl(URL.createObjectURL(file));
-    }
+    if (!file) return;
+
+    // Revoke old object URL to avoid memory leaks
+    if (previewUrl) URL.revokeObjectURL(previewUrl);
+
+    setPreviewUrl(URL.createObjectURL(file));
   };
 
+  // Submit handler for artist profile update
   const onArtistUpdate = async (data: any) => {
     setIsUpdating(true);
 
     const updatePromise = async () => {
       const formData = new FormData();
+
+      // Append text fields
       Object.keys(data).forEach((key) => {
         if (key !== "avatar") formData.append(key, data[key]);
       });
 
+      // Append avatar file manually
       const fileInput = document.getElementById(
         "artist-avatar"
       ) as HTMLInputElement;
+
       if (fileInput?.files?.[0]) {
         formData.append("avatar", fileInput.files[0]);
       }
 
+      // API call
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/api/users/update`,
         {
@@ -65,16 +78,19 @@ const ArtistProfileForm = ({ user }: { user: any }) => {
         }
       );
 
-      if (!response.ok) throw new Error("Vault update failed");
+      const result = await response.json();
 
+      if (!response.ok) throw new Error(result.error || "Vault update failed");
+
+      // Refresh server components to reflect updated data
       router.refresh();
-      return await response.json();
+      return result;
     };
 
     toast.promise(updatePromise(), {
       loading: "Archiving profile changes...",
-      success: "Artist Identity Synchronized.",
-      error: "Could not update profile.",
+      success: (data) => `${data.message}`,
+      error: (err) => `${err.message}`,
     });
     setIsUpdating(false);
   };
