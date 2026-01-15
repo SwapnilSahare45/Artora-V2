@@ -107,7 +107,7 @@ export const getArtworkById = async (req: Request, res: Response) => {
 
     // Find artwork by id
     const artwork: IArtwork | null = await Artwork.findById(id)
-      .populate("artist", "name avatar bio")
+      .populate("artist", "firstName lastName avatar bio")
       .lean();
 
     // If artwork not found
@@ -242,6 +242,7 @@ export const depositArtwork = async (req: AuthRequest, res: Response) => {
       imageURL: uploadResponse.secure_url,
       price: salePath === "direct" ? Number(price) : undefined,
       openingBid: salePath === "auction" ? Number(openingBid) : undefined,
+      reservePrice: reservePrice ? Number(reservePrice) : undefined,
       status: "pending",
     });
 
