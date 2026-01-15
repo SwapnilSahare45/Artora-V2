@@ -1,110 +1,208 @@
 import { Metadata } from "next";
+import { cookies } from "next/headers";
+import { Suspense } from "react";
 import Button from "@/components/atoms/Button";
 import StudioCard from "@/components/molecules/StudioCard";
 import { LuPlus } from "react-icons/lu";
+import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Studio Inventory | Artist Dashboard | Artora",
-  description:
-    "Manage your private art collection, track moderation status, and list pieces for upcoming exhibitions.",
+  title: "Studio Inventory | Artora",
 };
 
-const ArtistGalleryPage = () => {
-  const inventoryStats = [
-    { label: "Total Assets", value: "32" },
-    { label: "In Exhibition", value: "12" },
-    { label: "Studio Drafts", value: "08" },
-    { label: "Total Valuation", value: "₹18.4L" },
-  ];
+// Fetch artworks of the logged-in artist
+async function getArtistArtworks() {
+  // Read cookies from incoming request
+  const cookieStore = await cookies();
+
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/api/artworks/artistArtworks`,
+    {
+      headers: {
+        Cookie: cookieStore.toString(),
+      },
+      cache: "no-store", // Alwasy fetch fresh data
+    }
+  );
+
+  // If API fails, return empty list
+  if (!response.ok) return [];
+
+  const data = await response.json();
+  return data.artworks || [];
+}
+
+// Skeleton loader for stats section
+function StatsLoading() {
+  return (
+    <section className="grid grid-cols-2 md:grid-cols-4 gap-px bg-surface border border-glass">
+      {[1, 2, 3, 4].map((i) => (
+        <div key={i} className="p-8 animate-pulse">
+          <div className="h-3 w-20 bg-white/10 rounded mb-3" />
+          <div className="h-8 w-16 bg-white/10 rounded" />
+        </div>
+      ))}
+    </section>
+  );
+}
+
+// Skeleton loader for atworks grid
+function ArtworksLoading() {
+  return (
+    <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+      {[1, 2, 3, 4, 5, 6].map((i) => (
+        <div
+          key={i}
+          className="bg-surface border border-glass animate-pulse overflow-hidden"
+        >
+          <div className="aspect-3/2 bg-white/5" />
+          <div className="p-6 space-y-4">
+            <div className="h-4 w-3/4 bg-white/10 rounded" />
+            <div className="h-4 w-1/2 bg-white/10 rounded" />
+            <div className="h-3 w-20 bg-white/10 rounded" />
+          </div>
+        </div>
+      ))}
+    </section>
+  );
+}
+
+// Stats component
+function StatsSection({ artworks }: { artworks: any[] }) {
+  // Total artworks uploaded
+  const totalAssets = artworks.length;
+
+  // Count verified artworks
+  const verifiedCount = artworks.filter(
+    (a: any) => a.status === "verified"
+  ).length;
+
+  // Count pending artworks
+  const pendingCount = artworks.filter(
+    (a: any) => a.status === "pending"
+  ).length;
+
+  // Total valuation (only direct sale price)
+  const totalValuation = artworks.reduce(
+    (acc: number, a: any) => acc + (Number(a.price) || 0),
+    0
+  );
 
   return (
-    <main className="min-h-screen pt-32 pb-20 px-6 md:px-10">
+    <section className="grid grid-cols-2 md:grid-cols-4 gap-px bg-surface border border-glass">
+      {[
+        { label: "Total Assets", value: totalAssets },
+        { label: "Verified", value: verifiedCount },
+        { label: "Pending", value: pendingCount },
+        {
+          label: "Valuation",
+          value: `₹${(totalValuation / 1000).toFixed(1)}K`,
+        },
+      ].map((stat, i) => (
+        <div key={i} className="p-8">
+          <dt className="text-[9px] uppercase tracking-widest text-dim font-jakarta">
+            {stat.label}
+          </dt>
+          <dd className="text-3xl font-luxury m-0 text-white">{stat.value}</dd>
+        </div>
+      ))}
+    </section>
+  );
+}
+
+// Artworks grid component
+function ArtworksGrid({ artworks }: { artworks: any[] }) {
+  // Empty state when artist has no artworks
+  if (artworks.length === 0) {
+    return (
+      <section className="flex flex-col items-center justify-center py-20 space-y-6 border border-glass bg-surface/30">
+        <div className="text-center space-y-3">
+          <p className="font-jakarta text-dim text-sm uppercase tracking-widest">
+            No Artworks Yet
+          </p>
+          <p className="font-luxury text-2xl text-muted">
+            Your vault awaits its first masterpiece.
+          </p>
+        </div>
+        <Link href="/dashboard/artist/deposit">
+          <Button
+            title="Deposit First Piece"
+            icon={<LuPlus size={18} />}
+            className="h-14 px-8"
+          />
+        </Link>
+      </section>
+    );
+  }
+
+  // Grid view
+  return (
+    <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+      {artworks.map((item: any) => (
+        <StudioCard
+          key={item._id}
+          id={item._id}
+          status={item.status}
+          title={item.title}
+          price={
+            item.price
+              ? `₹${item.price.toLocaleString()}`
+              : `Bid: ₹${item.openingBid}`
+          }
+          imageURL={item.imageURL}
+        />
+      ))}
+    </section>
+  );
+}
+
+// Fetches artworks and passes them to child components
+async function GalleryContent() {
+  const artworks = await getArtistArtworks();
+  return (
+    <>
+      <StatsSection artworks={artworks} />
+      <ArtworksGrid artworks={artworks} />
+    </>
+  );
+}
+
+// Main page
+const ArtistGalleryPage = async () => {
+  return (
+    <main className="min-h-screen pt-12 pb-20 px-6 md:px-10">
       <div className="max-w-7xl mx-auto space-y-16">
-        <section className="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-10 border-b border-glass pb-12">
+        {/* Header Section */}
+        <section className="flex justify-between items-end border-b border-glass pb-12">
           <div className="space-y-4">
-            <div className="flex items-center gap-3">
-              <span className="w-8 h-px bg-brand" aria-hidden="true" />
-              <p className="font-jakarta text-brand text-[10px] font-bold uppercase tracking-[0.4em]">
-                Inventory Management
-              </p>
-            </div>
-            <h1 className="text-6xl md:text-7xl font-luxury leading-none tracking-tight">
+            <p className="font-jakarta text-brand text-[10px] font-bold uppercase tracking-[0.4em]">
+              Inventory Management
+            </p>
+            <h1 className="text-6xl md:text-7xl font-luxury">
               Studio <span className="italic text-muted">Inventory.</span>
             </h1>
           </div>
-
-          <div className="flex items-center gap-4 w-full lg:w-auto">
+          {/* Deposit button */}
+          <Link href="/dashboard/artist/deposit">
             <Button
               title="Deposit New Piece"
-              ariaLabel="Deposit a new artwork into the vault"
-              icon={<LuPlus size={18} aria-hidden="true" />}
-              className="h-16 px-10 shadow-neon flex-1 lg:flex-none"
+              icon={<LuPlus size={18} />}
+              className="h-16 px-10 shadow-neon"
             />
-          </div>
+          </Link>
         </section>
 
-        {/* Stats Overview */}
-        <section aria-label="Inventory Statistics">
-          <dl className="grid grid-cols-2 md:grid-cols-4 gap-px bg-surface border border-glass">
-            {inventoryStats.map((stat, i) => (
-              <div key={i} className="p-8 space-y-2">
-                <dt className="font-jakarta text-[9px] uppercase tracking-widest text-dim">
-                  {stat.label}
-                </dt>
-                <dd className="font-luxury text-3xl m-0">{stat.value}</dd>
-              </div>
-            ))}
-          </dl>
-        </section>
-
-        {/* Filter */}
-        <section className="flex flex-col md:flex-row justify-between items-center gap-6 py-4 border-b border-glass">
-          <nav
-            className="flex items-center gap-8 overflow-x-auto w-full md:w-auto pb-4 md:pb-0 no-scrollbar"
-            aria-label="Filter inventory by status"
-          >
-            {["All Pieces", "Live", "Pending", "Sold", "Private"].map(
-              (filter, i) => (
-                <button
-                  key={i}
-                  type="button"
-                  className={`whitespace-nowrap font-jakarta text-[10px] uppercase tracking-[0.2em] transition-colors min-h-11 px-2 ${
-                    i === 0
-                      ? "text-brand font-bold border-b border-brand"
-                      : "text-dim hover:text-white"
-                  }`}
-                >
-                  {filter}
-                </button>
-              )
-            )}
-          </nav>
-        </section>
-
-        {/* Inventory */}
-        <section aria-label="Artworks Grid">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-            {[
-              { status: "Live", title: "Digital Renaissance", price: "₹2,500" },
-              {
-                status: "Pending",
-                title: "Abstract Geometry",
-                price: "₹4,000",
-              },
-              { status: "Private", title: "The Looking Eye", price: "₹2,200" },
-              { status: "Sold", title: "Winter Modernism", price: "₹8,500" },
-              { status: "Live", title: "Sovereign Flow", price: "₹3,100" },
-              { status: "Private", title: "Ethereal Echo", price: "₹1,800" },
-            ].map((item, idx) => (
-              <StudioCard
-                key={idx}
-                status={item.status as any}
-                title={item.title}
-                price={item.price}
-              />
-            ))}
-          </div>
-        </section>
+        {/* Stats and Artworks section */}
+        <Suspense
+          fallback={
+            <>
+              <StatsLoading />
+              <ArtworksLoading />
+            </>
+          }
+        >
+          <GalleryContent />
+        </Suspense>
       </div>
     </main>
   );

@@ -15,13 +15,15 @@ const LoginForm = () => {
     formState: { errors },
   } = useForm();
 
+  // Handle login submit
   const onFormSubmit = async (data: any) => {
     const loginPromise = async () => {
+      // API call
       const response = await fetch("http://localhost:4500/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
-        credentials: "include",
+        credentials: "include", // Allow cookies handling
       });
 
       const result = await response.json();
@@ -30,8 +32,10 @@ const LoginForm = () => {
         throw new Error(result.error || "Access Denied");
       }
 
+      // Clear form fields after successful login
       reset();
 
+      // Redirect user to artworks page
       window.location.href = "/artworks";
 
       return result;
@@ -39,13 +43,14 @@ const LoginForm = () => {
 
     toast.promise(loginPromise(), {
       loading: "Validating Credentials...",
-      success: (data) => `Welcome back, ${data.user.firstName}.`,
+      success: (data) => `${data.message}`,
       error: (err) => `${err.message}`,
     });
   };
 
   return (
     <div className="w-full">
+      {/* Login form */}
       <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-8">
         <div className="space-y-6">
           <Input

@@ -17,9 +17,13 @@ export const metadata: Metadata = {
 };
 
 export default async function Home() {
+  // Read request headers
   const headersList = await headers();
+
+  // Custom header injected from middleware
   const userRole = headersList.get("x-user-role");
 
+  // Categories show in visual navigation section
   const visualNavigation = [
     { name: "Abstract", slug: "abstract", image: "/abstract.webp" },
     { name: "Digital Art", slug: "digital-art", image: "/digitalart.webp" },
@@ -27,6 +31,7 @@ export default async function Home() {
     { name: "Traditional", slug: "traditional", image: "/traditional.webp" },
   ];
 
+  // Steps shown for collectors
   const collectorSteps = [
     {
       step: "01",
@@ -44,6 +49,8 @@ export default async function Home() {
       info: "Every acquisition is handled with care, featuring insured worldwide shipping and white-glove delivery.",
     },
   ];
+
+  // Steps shown for artists
   const artistSteps = [
     {
       step: "01",
@@ -62,6 +69,7 @@ export default async function Home() {
     },
   ];
 
+  // Steps to show based on logged-in user role
   const activeSteps = userRole === "artist" ? artistSteps : collectorSteps;
 
   return (
@@ -97,6 +105,7 @@ export default async function Home() {
                   className="px-10 h-14 shadow-neon"
                 />
               </Link>
+              {/* Conditional CTA based on user role */}
               {userRole === "artists" ? (
                 <Link href={"/dashboard/artist/deposit"}>
                   <Button
@@ -144,7 +153,7 @@ export default async function Home() {
           </div>
         </section>
 
-        {/* Trending artworks section */}
+        {/* Featured artworks */}
         <section
           className="max-w-7xl mx-auto py-24 px-6 flex flex-col"
           aria-labelledby="trending-heading"
@@ -161,7 +170,7 @@ export default async function Home() {
                 id="trending-heading"
                 className="text-5xl md:text-6xl font-luxury leading-none tracking-tight"
               >
-                Trending <span className="italic text-muted">Artworks</span>
+                Featured <span className="italic text-muted">Artworks</span>
               </h2>
             </div>
 
@@ -284,7 +293,7 @@ export default async function Home() {
                 />
               </Link>
             ) : userRole === "artist" ? (
-              <Link href="/dashboard/artist/create-artwork">
+              <Link href="/dashboard/artist/deposit">
                 <Button
                   title="List New Masterpiece"
                   ariaLabel="Go to artist dashboard to list artwork"

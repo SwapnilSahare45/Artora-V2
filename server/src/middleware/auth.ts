@@ -10,7 +10,6 @@ export const protect = (
   try {
     // Get token from cookie
     const token = req.cookies.token;
-
     if (!token) {
       return res.status(401).json({
         success: false,

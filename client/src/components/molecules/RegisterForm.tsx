@@ -18,17 +18,23 @@ import { toast } from "sonner";
 const RegisterForm = () => {
   const router = useRouter();
 
+  // Server action states
+  // Handle user registration
   const [registerUserState, registerUserAction, isRegisterUserPending] =
     useActionState(registerAction, { success: false, error: null });
 
+  // Handle OTP verification
   const [verifyOTPState, verifyEmailOTPAction, isVerifyOTPPending] =
     useActionState(verifyOTPAction, { success: false, error: null });
 
+  // Handle OTP resend
   const [resendOTPState, resendEmaiOTPAction, isResendOTPPending] =
     useActionState(resendOTPAction, { success: false, error: null });
 
+  // Used to reset countdown timer on OTP resend
   const [countdownKey, setCountdownKey] = useState(0);
 
+  // Registration form
   const {
     register,
     handleSubmit,
@@ -46,6 +52,7 @@ const RegisterForm = () => {
     },
   });
 
+  // OTP form
   const {
     register: registerOTP,
     reset: otpReset,
@@ -57,6 +64,7 @@ const RegisterForm = () => {
     },
   });
 
+  // Watch selected role for UI highlighting
   const selectedRole = watch("role");
 
   useEffect(() => {
@@ -71,7 +79,7 @@ const RegisterForm = () => {
       toast.success("Identity initialized. Verify your email.");
       // Reset coundown when switching to OTP screen
       setCountdownKey((prev) => prev + 1);
-      reset();
+      reset(); // Clear registration form
     }
   }, [
     registerUserState.success,
@@ -109,12 +117,14 @@ const RegisterForm = () => {
     }
   }, [resendOTPState.success, resendOTPState.error]);
 
+  // Submit registration data using server action
   const onRegisterFormSubmit = (data: any) => {
     startTransition(() => {
       registerUserAction(data);
     });
   };
 
+  // Submit OTP verification
   const onVerifyOTPFromSubmit = (data: any) => {
     startTransition(() => {
       verifyEmailOTPAction({
@@ -124,6 +134,7 @@ const RegisterForm = () => {
     });
   };
 
+  // Resend OTP and restart countdown
   const handleResendOTP = () => {
     startTransition(() => {
       resendEmaiOTPAction({ email: registerUserState.result.user.email });

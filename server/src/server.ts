@@ -5,6 +5,7 @@ import cookieParser from "cookie-parser";
 import { connectDB } from "./config/db";
 import authRoutes from "./routes/auth.routes";
 import userRoutes from "./routes/user.routes";
+import artworkRoutes from "./routes/artwork.routes";
 
 const app: Application = express();
 
@@ -21,6 +22,7 @@ app.use(express.json());
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/artworks", artworkRoutes);
 
 // Start server
 const startServer = async () => {

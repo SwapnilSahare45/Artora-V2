@@ -1,4 +1,4 @@
-import mongoose, { Document, Schema } from "mongoose";
+import { Document, model, Schema } from "mongoose";
 import { IUser } from "../types";
 import bcrypt from "bcryptjs";
 
@@ -6,7 +6,7 @@ export interface IUserDocument extends IUser, Document {
   comparePassword(userPassword: string): Promise<boolean>;
 }
 
-const userSchema = new Schema<IUserDocument>(
+const userSchema: Schema<IUserDocument> = new Schema(
   {
     firstName: {
       type: String,
@@ -116,4 +116,4 @@ userSchema.methods.comparePassword = async function (
   }
 };
 
-export const User = mongoose.model<IUserDocument>("User", userSchema);
+export const User = model<IUserDocument>("User", userSchema);

@@ -6,45 +6,26 @@ import { LuSearch } from "react-icons/lu";
 
 const Search = () => {
   const { updateQuery, searchParams } = useUpdateQuery();
-  const [query, setQuery] = useState(searchParams.get("q") || "");
+  const [query, setQuery] = useState(searchParams.get("search") || "");
 
+  // Debounced search effect
   useEffect(() => {
-    const timerId = setTimeout(() => {
-      if (query !== (searchParams.get("q") || "")) {
-        updateQuery({ q: query });
-      }
+    const id = setTimeout(() => {
+      updateQuery({ search: query || null, page: "1" });
     }, 500);
 
-    return () => clearTimeout(timerId);
-  }, [query, updateQuery, searchParams]);
+    return () => clearTimeout(id);
+  }, [query]);
 
   return (
-    <div className="relative w-full md:w-72 group">
-      <LuSearch
-        className={`absolute left-0 top-1/2 -translate-y-1/2 transition-colors ${
-          query ? "text-brand" : "text-dim group-focus-within:text-brand"
-        }`}
-        size={18}
-        aria-hidden="true"
-      />
+    <div className="relative w-72">
+      <LuSearch className="absolute left-2 top-1/2 -translate-y-1/2" />
       <input
-        type="text"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
-        placeholder="Search artist or title..."
-        aria-label="Search the permanent collection"
-        className="w-full bg-transparent border-b border-glass pl-8 pr-12 py-2 font-jakarta text-sm outline-none focus:border-brand transition-all duration-500 placeholder:text-text-dim/50"
+        placeholder="Search artwork or artist"
+        className="w-full bg-transparent border-0 border-b border-white/20 pl-10 py-4 font-jakarta text-sm text-white outline-none focus:border-brand focus:shadow-none transition-all placeholder:text-white/30 hover:border-white/40"
       />
-
-      {query && (
-        <button
-          onClick={() => setQuery("")}
-          aria-label="Clear search input"
-          className="absolute right-0 top-1/2 -translate-y-1/2 text-[10px] text-brand uppercase tracking-tighter hover:text-white transition-colors"
-        >
-          Clear
-        </button>
-      )}
     </div>
   );
 };

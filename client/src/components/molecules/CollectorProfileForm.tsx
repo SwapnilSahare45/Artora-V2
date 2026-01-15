@@ -7,6 +7,7 @@ import { useForm } from "react-hook-form";
 import { useState } from "react";
 import Button from "../atoms/Button";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 interface ProfileInput {
   firstName: string;
@@ -17,7 +18,11 @@ interface ProfileInput {
 }
 
 const CollectorProfileForm = ({ user }: { user: any }) => {
+  const router = useRouter();
+
+  // Preview image URL for avatar before upload
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  // Button loading state
   const [isUpdating, setIsUpdating] = useState(false);
 
   const {
@@ -34,18 +39,23 @@ const CollectorProfileForm = ({ user }: { user: any }) => {
     },
   });
 
+  // Watching form fields for real-time preview
   const firstName = watch("firstName");
   const lastName = watch("lastName");
   const bio = watch("bio");
 
+  // Handle avatar preview when file is selected
   const handleFilePreview = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      if (previewUrl) URL.revokeObjectURL(previewUrl);
-      setPreviewUrl(URL.createObjectURL(file));
-    }
+    if (!file) return;
+
+    // Revoke old object URL to avoid memory leaks
+    if (previewUrl) URL.revokeObjectURL(previewUrl);
+
+    setPreviewUrl(URL.createObjectURL(file));
   };
 
+  // Submit handler for collector profile update
   const onSubmit = async (data: ProfileInput) => {
     setIsUpdating(true);
 
@@ -59,6 +69,7 @@ const CollectorProfileForm = ({ user }: { user: any }) => {
         formData.append("avatar", data.avatar[0]);
       }
 
+      // API call
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/api/users/update`,
         {
@@ -67,17 +78,22 @@ const CollectorProfileForm = ({ user }: { user: any }) => {
           credentials: "include",
         }
       );
+
+      const result = await response.json();
+
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || "Failed to update profile");
+        throw new Error(result.error || "Failed to update profile");
       }
 
-      return await response.json();
+      // Refresh server components to reflect updated data
+      router.refresh();
+
+      return result;
     };
 
     toast.promise(updatePromise(), {
       loading: "Synchronizing with Archive...",
-      success: "Identity Updated Successfully.",
+      success: (data) => `${data.message}`,
       error: (err) => `${err.message}`,
     });
 
