@@ -92,10 +92,8 @@ export type ArtCategory = (typeof ART_CATEGORIES)[number];
 export type ArtMedium = (typeof ART_MEDIUMS)[number];
 
 export interface IArtwork {
-  _id: string;
   artist:
     | mongoose.Types.ObjectId
-    | string
     | {
         _id: string;
         firstName: string;
@@ -110,6 +108,7 @@ export interface IArtwork {
   description: string;
   imageURL: string;
   salePath: "auction" | "direct";
+  auctionId?: mongoose.Types.ObjectId; // If salePath ==="auction"
   price?: number; // If salePath === "direct"
   openingBid?: number; // If salePath === "auction"
   reservePrice?: number; // If salePath === "auction"
@@ -142,4 +141,17 @@ export interface IArtworkQueryParams {
   order?: string;
   minPrice?: string;
   maxPrice?: string;
+}
+
+// ======================== Auction Type ==========================
+export interface IAuction {
+  title: string;
+  description: string;
+  artworkIds: mongoose.Types.ObjectId[];
+  startDate: Date;
+  endDate: Date;
+  status: "draft" | "scheduled" | "live" | "completed";
+  createdBy: mongoose.Schema.Types.ObjectId;
+  createdAt: Date;
+  updatedAt: Date;
 }

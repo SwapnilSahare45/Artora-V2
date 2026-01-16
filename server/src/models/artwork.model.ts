@@ -1,7 +1,7 @@
-import { model, Schema } from "mongoose";
+import { Document, model, Schema } from "mongoose";
 import { ART_CATEGORIES, ART_MEDIUMS, IArtwork } from "../types";
 
-export interface IArtworkDocument extends IArtwork {}
+export interface IArtworkDocument extends IArtwork, Document {}
 
 const artworkSchema: Schema<IArtworkDocument> = new Schema(
   {
@@ -46,6 +46,9 @@ const artworkSchema: Schema<IArtworkDocument> = new Schema(
       type: String,
       enum: ["auction", "direct"],
       required: true,
+    },
+    auctionId: {
+      type: Schema.Types.ObjectId,
     },
     price: {
       type: Number,
