@@ -155,3 +155,25 @@ export interface IAuction {
   createdAt: Date;
   updatedAt: Date;
 }
+
+// ===================== Order Type =============================
+export interface IOrder {
+  buyer: mongoose.Schema.Types.ObjectId;
+  artist: mongoose.Schema.Types.ObjectId;
+  artwork: mongoose.Schema.Types.ObjectId;
+  saleType: "direct" | "auction";
+  auction?: mongoose.Schema.Types.ObjectId;
+  amount: number;
+  shipping: {
+    name: string;
+    phone: string;
+    address: string;
+    city: string;
+    postal: string;
+  };
+  paymentMethod: "cod" | "upi" | "card" | "wallet";
+  paymentStatus: "pending" | "paid" | "failed" | "refunded";
+  orderStatus: "created" | "confirmed" | "shipped" | "delivered" | "cancelled";
+  createdAt: Date;
+  updatedAt: Date;
+}

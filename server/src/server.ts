@@ -7,6 +7,8 @@ import authRoutes from "./routes/auth.routes";
 import userRoutes from "./routes/user.routes";
 import artworkRoutes from "./routes/artwork.routes";
 import adminRoutes from "./routes/admin.routes";
+import auctionRoutes from "./routes/auction.routes";
+import orderRoutes from "./routes/order.routes";
 
 const app: Application = express();
 
@@ -24,6 +26,8 @@ app.use(express.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/artworks", artworkRoutes);
+app.use("/api/auctions", auctionRoutes);
+app.use("/api/orders", orderRoutes);
 app.use("/api/admin", adminRoutes);
 
 // Start server
