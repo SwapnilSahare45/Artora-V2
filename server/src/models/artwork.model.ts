@@ -49,6 +49,7 @@ const artworkSchema: Schema<IArtworkDocument> = new Schema(
     },
     auctionId: {
       type: Schema.Types.ObjectId,
+      ref: "Auction",
     },
     price: {
       type: Number,
@@ -77,7 +78,7 @@ const artworkSchema: Schema<IArtworkDocument> = new Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 artworkSchema.index({ status: 1, category: 1 });

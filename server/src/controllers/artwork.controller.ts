@@ -8,6 +8,43 @@ import {
 import { bufferToDataUrl } from "../utils/bufferToDataUrl";
 import cloudinary from "../utils/cloudinary";
 import { Artwork } from "../models/artwork.model";
+import { Auction } from "../models/auction.model";
+
+export const getFeaturedArtworks = async (req: Request, res: Response) => {
+  try {
+    // Get live auctions
+    const liveAuctions = await Auction.find({ status: "live" }).select("_id");
+    const liveAuctionIds = liveAuctions.map((a) => a._id);
+
+    // Filter -> Featured, verified, Not sold and direct sale or live Auction
+    const filter = {
+      isFeatured: true,
+      status: "verified",
+      $or: [
+        { salePath: "direct" },
+        { salePath: "auction", auctionId: { $in: liveAuctionIds } },
+      ],
+    };
+
+    // Fetch artworks
+    const artworks = await Artwork.find(filter)
+      .populate("artist", "firstName lastName avatar")
+      .populate("auctionId", "status startDate endDate")
+      .sort({ createdAt: -1 })
+      .limit(6);
+
+    return res.status(200).json({
+      success: true,
+      message: "Featured artworks retrieved successfully",
+      artworks,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      error: "Internal protocol failure while fetching featured artworks",
+    });
+  }
+};
 
 export const getAllVerifiedArtworks = async (req: Request, res: Response) => {
   try {
@@ -23,6 +60,10 @@ export const getAllVerifiedArtworks = async (req: Request, res: Response) => {
       maxPrice,
     }: IArtworkQueryParams = req.query;
 
+    // Fetch live auctionIds
+    const liveAuctionIds = await Auction.find({ status: "live" }).select("_id");
+    const auctionIds = liveAuctionIds.map((a) => a._id);
+
     // Convert page and limit to number
     const pageNum = Math.max(1, Number(page) || 1);
     const limitNum = Math.min(50, Math.max(1, Number(limit) || 12)); // Max 50 per page
@@ -30,7 +71,17 @@ export const getAllVerifiedArtworks = async (req: Request, res: Response) => {
 
     // Create a filter object
     // Only verified artworks
-    const filter: any = { status: "verified" };
+    const filter: any = {
+      status: "verified",
+      $and: [
+        {
+          $or: [
+            { salePath: "direct" },
+            { salePath: "auction", auctionId: { $in: auctionIds } },
+          ],
+        },
+      ],
+    };
 
     // Category filter
     if (category && category.toLowerCase() !== "all") {
@@ -42,12 +93,14 @@ export const getAllVerifiedArtworks = async (req: Request, res: Response) => {
       filter.medium = medium;
     }
 
-    // Search filter (title, description, artist name)
+    // Search filter (title, description)
     if (search && search.trim()) {
-      filter.$or = [
-        { title: { $regex: search.trim(), $options: "i" } },
-        { description: { $regex: search.trim(), $options: "i" } },
-      ];
+      filter.$and.push({
+        $or: [
+          { title: { $regex: search.trim(), $options: "i" } },
+          { description: { $regex: search.trim(), $options: "i" } },
+        ],
+      });
     }
 
     // Price range filter
@@ -65,6 +118,7 @@ export const getAllVerifiedArtworks = async (req: Request, res: Response) => {
     const [artworks, totalCount] = await Promise.all([
       Artwork.find(filter)
         .populate("artist", "firstName lastName avatar")
+        .populate("auctionId", "status startDate endDate")
         .sort(sortObj)
         .skip(skip)
         .limit(limitNum)
@@ -72,6 +126,7 @@ export const getAllVerifiedArtworks = async (req: Request, res: Response) => {
 
       Artwork.countDocuments(filter),
     ]);
+    console.log(artworks);
 
     // Calculate pegination info
     const totalPages = Math.ceil(totalCount / limitNum);
