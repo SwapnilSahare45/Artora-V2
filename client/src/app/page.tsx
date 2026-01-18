@@ -9,6 +9,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { headers } from "next/headers";
 import NavbarServer from "@/components/molecules/NavbarServer";
+import FeaturedArtworks from "@/components/molecules/FeaturedArtworks";
+import VisualNavigation from "@/components/molecules/VisualNavigation";
 
 export const metadata: Metadata = {
   title: "Artora | Curated Luxury Art & Digital Masterpieces",
@@ -22,14 +24,6 @@ export default async function Home() {
 
   // Custom header injected from middleware
   const userRole = headersList.get("x-user-role");
-
-  // Categories show in visual navigation section
-  const visualNavigation = [
-    { name: "Abstract", slug: "abstract", image: "/abstract.webp" },
-    { name: "Digital Art", slug: "digital-art", image: "/digitalart.webp" },
-    { name: "Photography", slug: "photography", image: "/photography.webp" },
-    { name: "Traditional", slug: "traditional", image: "/traditional.webp" },
-  ];
 
   // Steps shown for collectors
   const collectorSteps = [
@@ -154,86 +148,28 @@ export default async function Home() {
         </section>
 
         {/* Featured artworks */}
-        <section
-          className="max-w-7xl mx-auto py-24 px-6 flex flex-col"
-          aria-labelledby="trending-heading"
+
+        <Suspense
+          fallback={
+            <section className="max-w-7xl mx-auto py-24 px-6">
+              <div className="h-96 w-full flex items-center justify-center">
+                <div className="flex flex-col items-center gap-4">
+                  <div className="w-12 h-12 border-t-2 border-brand rounded-full animate-spin" />
+                  <p className="text-brand uppercase tracking-widest text-[10px]">
+                    Loading Featured Artworks...
+                  </p>
+                </div>
+              </div>
+            </section>
+          }
         >
-          <header className="w-full flex flex-col md:flex-row md:items-end justify-between mb-12 gap-8 border-b border-glass pb-10">
-            <div className="space-y-4">
-              <div className="flex items-center gap-3">
-                <span className="w-8 h-px bg-brand" aria-hidden="true" />
-                <p className="font-jakarta text-brand text-[10px] font-bold uppercase tracking-[0.4em]">
-                  Top 5 Curation
-                </p>
-              </div>
-              <h2
-                id="trending-heading"
-                className="text-5xl md:text-6xl font-luxury leading-none tracking-tight"
-              >
-                Featured <span className="italic text-muted">Artworks</span>
-              </h2>
-            </div>
-
-            <LayoutToggle />
-          </header>
-
-          <Suspense
-            fallback={
-              <div
-                className="h-96 w-full flex items-center justify-center text-brand uppercase tracking-widest text-[10px]"
-                role="status"
-              >
-                Loading Gallery...
-              </div>
-            }
-          >
-            <ArtworkLayoutMode />
-          </Suspense>
-        </section>
+          <FeaturedArtworks />
+        </Suspense>
 
         <ArtistSpotlight />
 
         {/* Visual Navigation */}
-        <section
-          className="max-w-7xl mx-auto py-24 px-6"
-          aria-labelledby="exhibition-heading"
-        >
-          <div className="flex justify-between items-end mb-12 border-b border-glass pb-8">
-            <h2 id="exhibition-heading" className="text-4xl font-luxury">
-              Browse by <span className="italic text-brand">Exhibition</span>
-            </h2>
-            <p className="text-dim font-jakarta text-[10px] uppercase tracking-widest">
-              Four distinct realms
-            </p>
-          </div>
-          <div
-            className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4"
-            role="list"
-          >
-            {visualNavigation.map((nav, idx) => (
-              <Link
-                href={`/artworks/${nav.slug}`}
-                key={idx}
-                role="listitem"
-                className="group relative h-100 overflow-hidden border border-glass"
-                aria-label={`Explore the ${nav.name} exhibition`}
-              >
-                <Image
-                  src={nav.image}
-                  alt=""
-                  fill
-                  className="object-cover grayscale group-hover:grayscale-0 group-hover:scale-110 transition-all duration-700 ease-out"
-                />
-                <div className="absolute inset-0 bg-black/60 group-hover:bg-black/30 transition-all duration-500" />
-                <div className="absolute inset-0 flex items-center justify-center p-6 border border-white/0 group-hover:border-glass transition-all">
-                  <h3 className="text-sm font-jakarta font-bold tracking-[0.4em] uppercase">
-                    {nav.name}
-                  </h3>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </section>
+        <VisualNavigation />
 
         {/* How it Works */}
         <section className="max-w-7xl mx-auto py-40 px-6 grid grid-cols-1 md:grid-cols-3 gap-16 border-t border-glass">
