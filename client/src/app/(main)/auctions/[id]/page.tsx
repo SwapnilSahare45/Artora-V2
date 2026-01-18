@@ -1,84 +1,104 @@
 import { Metadata } from "next";
 import { Suspense } from "react";
+import { cookies } from "next/headers";
 import AuctionTimer from "@/components/atoms/AuctionTimer";
 import LayoutToggle from "@/components/atoms/LayoutToggle";
 import ArtworkLayoutMode from "@/components/molecules/ArtworkLayoutMode";
-import { LuActivity, LuUsers } from "react-icons/lu";
 
-export const metadata: Metadata = {
-  title: "The Winter Modernism | Live Auction | Artora",
-  description:
-    "Live auction event featuring 12 curated digital and traditional masterpieces. Join 40+ active bidders now.",
+type AuctionPageProps = {
+  params: Promise<{ id: string }>;
 };
 
-const AuctionPage = () => {
+type Auction = {
+  _id: string;
+  title: string;
+  description: string;
+  startDate: string;
+  endDate: string;
+  artworkIds: any[];
+};
+
+export const metadata: Metadata = {
+  title: "Live Auction | Artora",
+};
+
+const AuctionPage = async ({ params }: AuctionPageProps) => {
+  // Get auction ID from URL
+  const { id } = await params;
+  const cookieStore = await cookies();
+
+  // Fetch auction details
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/api/auctions/${id}`,
+    {
+      headers: {
+        Cookie: cookieStore.toString(),
+      },
+      cache: "no-store",
+    },
+  );
+
+  if (!res.ok) {
+    throw new Error("Failed to initialize auction protocol.");
+  }
+
+  const { auction }: { auction: Auction } = await res.json();
+
   return (
-    <main className="min-h-screen antialiased pt-32 pb-24">
+    <main className="min-h-screen antialiased pt-12 pb-24">
       <section className="max-w-7xl mx-auto px-6">
         <div className="flex flex-col lg:flex-row justify-between items-start gap-12 mb-20">
           <header className="space-y-6 max-w-2xl">
-            <div
-              className="flex items-center gap-3 text-brand"
-              aria-hidden="true"
-            >
+            <div className="flex items-center gap-3 text-brand">
               <span className="w-8 h-px bg-current" />
               <p className="font-jakarta text-[10px] font-bold uppercase tracking-[0.4em]">
                 Live Auction Event
               </p>
             </div>
+
             <h1 className="text-6xl md:text-8xl font-luxury leading-[0.9] tracking-tight">
-              The Winter <br />{" "}
-              <span className="italic text-brand">Modernism.</span>
+              {auction.title.split(" ").slice(0, 1).join(" ")} <br />
+              <span className="italic text-brand">
+                {auction.title.split(" ").slice(1).join(" ")}.
+              </span>
             </h1>
+
             <p className="font-jakarta text-sm text-muted leading-relaxed max-w-md">
-              A curated selection of 12 works exploring the intersection of
-              cold-light and digital abstraction. Organized by the Artora
-              Curatorial Collective.
+              {auction.description}
             </p>
           </header>
 
-          {/* Stats & Timer Card */}
-          <aside
-            className="w-full lg:w-100 bg-surface border border-glass p-10 space-y-10 shadow-2xl"
-            aria-label="Live Auction Statistics"
-          >
+          {/* Stats & Timer */}
+          <aside className="w-full lg:w-100 bg-surface border border-glass p-10 space-y-10 shadow-2xl">
             <div className="space-y-3">
               <p className="font-jakarta text-[9px] uppercase tracking-[0.3em] text-dim">
                 Time Remaining
               </p>
-              <div
-                className="font-mono text-4xl tracking-widest bg-surface-hover px-6 py-3 inline-block border border-glass"
-                aria-live="polite"
-              >
-                <AuctionTimer targetDate={new Date(Date.now() + 5000000)} />
+              <div className="font-mono text-4xl tracking-widest bg-surface-hover px-6 py-3 inline-block border border-glass">
+                <AuctionTimer targetDate={new Date(auction.endDate)} />
               </div>
             </div>
 
             <dl className="grid grid-cols-2 gap-8 border-t border-glass pt-10">
               <div className="space-y-2">
                 <dt className="font-jakarta text-[9px] uppercase tracking-widest text-dim">
-                  Active Bidders
+                  Auction Start
                 </dt>
-                <dd className="flex items-center gap-2">
-                  <LuUsers
-                    className="text-brand"
-                    size={16}
-                    aria-hidden="true"
-                  />
-                  <span className="font-luxury text-3xl">42</span>
+                <dd className="font-luxury text-2xl">
+                  {new Date(auction.startDate).toLocaleDateString("en-IN", {
+                    day: "2-digit",
+                    month: "short",
+                    year: "numeric",
+                  })}
                 </dd>
               </div>
+
               <div className="space-y-2">
                 <dt className="font-jakarta text-[9px] uppercase tracking-widest text-dim">
-                  Current Volume
+                  Total Lots
                 </dt>
-                <dd className="flex items-center gap-2">
-                  <LuActivity
-                    className="text-emerald-500"
-                    size={16}
-                    aria-hidden="true"
-                  />
-                  <span className="font-luxury text-3xl">₹24.8L</span>
+                <dd className="font-luxury text-3xl">
+                  {auction.artworkIds.length}
                 </dd>
               </div>
             </dl>
@@ -86,20 +106,16 @@ const AuctionPage = () => {
         </div>
       </section>
 
-      {/* Catalog Control Bar */}
-      <section className="max-w-7xl mx-auto flex items-center justify-between border-y border-glass py-8 px-6 backdrop-blur-md z-20">
+      {/* Catalog */}
+      <section className="max-w-7xl mx-auto flex items-center justify-between border-y border-glass py-8 px-6">
         <h2 className="text-4xl font-luxury">
           The <span className="italic text-dim">Catalog.</span>
         </h2>
-        <nav
-          className="flex items-center gap-8 w-full md:w-auto justify-between md:justify-end"
-          aria-label="Catalog View Controls"
-        >
-          <span className="font-jakarta text-[10px] text-brand uppercase tracking-widest font-bold">
-            12 Lots Remaining
-          </span>
 
-          <div className="h-4 w-px bg-dim hidden md:block" aria-hidden="true" />
+        <nav className="flex items-center gap-8">
+          <span className="font-jakarta text-[10px] text-brand uppercase tracking-widest font-bold">
+            {auction.artworkIds.length} Lots Remaining
+          </span>
 
           <Suspense
             fallback={<div className="h-10 w-24 bg-glass animate-pulse" />}
@@ -110,15 +126,7 @@ const AuctionPage = () => {
       </section>
 
       <section className="max-w-7xl mx-auto mt-20 px-6">
-        <Suspense
-          fallback={
-            <div className="text-dim uppercase text-[10px] tracking-widest">
-              Loading curated lots...
-            </div>
-          }
-        >
-          <ArtworkLayoutMode />
-        </Suspense>
+        <ArtworkLayoutMode artworks={auction.artworkIds} />
       </section>
     </main>
   );
