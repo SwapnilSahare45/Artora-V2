@@ -12,6 +12,7 @@ export const metadata: Metadata = {
     "Browse the permanent collection of elite independent artworks, filtered by movement, medium, and style.",
 };
 
+// URL search parameters supported by this page
 interface SearchParams {
   page?: string;
   category?: string;
@@ -46,9 +47,9 @@ const GalleryLoader = () => (
   </div>
 );
 
-// Function to fetch artworks from backend
+// Fetch verified artworks from backend using filters
 async function getVerifiedArtworks(
-  searchParams: SearchParams & { priceRange?: string; sort?: string }
+  searchParams: SearchParams & { priceRange?: string; sort?: string },
 ): Promise<ArtworkData> {
   // Price filter handling
   let minPrice, maxPrice;
@@ -58,9 +59,10 @@ async function getVerifiedArtworks(
     maxPrice = max;
   }
 
-  // Sorting
+  // Default sorting
   let sortBy = "createdAt";
   let order = "desc";
+  // Update sorting if provided
   if (searchParams.sort) {
     const [field, direction] = searchParams.sort.split("-");
     sortBy = field;
@@ -81,12 +83,13 @@ async function getVerifiedArtworks(
   });
 
   try {
+    // Call API
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/api/artworks/?${params}`,
       {
         cache: "no-store",
         next: { revalidate: 0 },
-      }
+      },
     );
 
     if (!response.ok) {
@@ -128,6 +131,7 @@ async function ArtworkContent({
 }: {
   searchParams: SearchParams;
 }) {
+  // Fetch artworks based on filters
   const data = await getVerifiedArtworks(searchParams);
 
   // If no artworks found
@@ -185,7 +189,7 @@ const Artworks = async ({ searchParams }: ArtworksPageProps) => {
             </p>
           </header>
           <h1 className="text-6xl md:text-8xl font-luxury leading-none tracking-tight">
-            The <span className="italic">Collection.</span>
+            The <span className="italic text-brand">Collection.</span>
           </h1>
         </div>
       </section>

@@ -5,6 +5,7 @@ import Button from "@/components/atoms/Button";
 import Image from "next/image";
 import { LuHeart, LuInfo, LuShare2 } from "react-icons/lu";
 import { IArtwork } from "@/types";
+import Link from "next/link";
 
 interface ArtworkPageProps {
   params: Promise<{ id: string }>;
@@ -13,12 +14,13 @@ interface ArtworkPageProps {
 // Fetch artwork data from API
 async function getArtwork(id: string): Promise<IArtwork | null> {
   try {
+    // API call
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/api/artworks/${id}`,
       {
-        cache: "no-store",
+        cache: "no-store", // Always fetch fresh data
         next: { revalidate: 0 },
-      }
+      },
     );
 
     if (!response.ok) {
@@ -62,6 +64,7 @@ export async function generateMetadata({
   };
 }
 
+// Main page
 const ArtworkPage = async ({ params }: ArtworkPageProps) => {
   const { id } = await params;
   const artwork = await getArtwork(id);
@@ -70,7 +73,9 @@ const ArtworkPage = async ({ params }: ArtworkPageProps) => {
     notFound();
   }
 
-  // Normalize dispaly price
+  // Normalize price based on sale type
+  // Auction -> opening bid
+  // Direct sale -> fixed price
   const isAuction = artwork.salePath === "auction";
   const displayPrice = isAuction ? artwork.openingBid || 0 : artwork.price || 0;
 
@@ -213,11 +218,13 @@ const ArtworkPage = async ({ params }: ArtworkPageProps) => {
                 </p>
               </>
             ) : (
-              <Button
-                title="Purchase Now"
-                type="submit"
-                className="w-full h-16 text-[12px]! tracking-[0.3em]! shadow-neon"
-              />
+              <Link href={`/checkout/${artwork._id}`}>
+                <Button
+                  title="Purchase Now"
+                  type="submit"
+                  className="w-full h-16 text-[12px]! tracking-[0.3em]! shadow-neon"
+                />
+              </Link>
             )}
           </form>
         </article>
