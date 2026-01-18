@@ -1,31 +1,94 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import {
+  LuGavel,
+  LuPlus,
+  LuShieldCheck,
+  LuTrash2,
+  LuCalendar,
+  LuClock,
+} from "react-icons/lu";
 import Button from "@/components/atoms/Button";
 import Input from "@/components/atoms/Input";
 import LotSelectorModal from "@/components/molecules/LotSelectorModal";
-import { LuGavel, LuPlus, LuShieldCheck, LuTrash2 } from "react-icons/lu";
 
 const CreateAuctionPage = () => {
+  const router = useRouter();
+
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // Stores selected artworks for auction
   const [selectedLots, setSelectedLots] = useState<any[]>([]);
 
-  const inputClass =
-    "w-full bg-transparent shadow-none border-0 border-b border-white/20 py-3 font-jakarta text-sm text-white outline-none focus:border-brand focus:shadow-none transition-all duration-500 placeholder:text-white/20 hover:border-white/40";
+  const [formData, setFormData] = useState({
+    title: "",
+    description: "",
+    startDate: "",
+    startTime: "",
+    endDate: "",
+    endTime: "",
+  });
 
-  const handleSelectArtwork = (id: string) => {
-    const mockArtwork = {
-      id,
-      title: "Masterpiece Asset",
-      artist: "Verified Creator",
-      val: "₹2.5L",
+  const inputClass =
+    "w-full bg-transparent border-0 border-b border-white/20 py-3 font-jakarta text-sm text-white outline-none focus:border-brand focus:shadow-none transition-all cursor-pointer";
+
+  // Add / Remove artworks from selected lot
+  const handleSelectArtwork = (artwork: any) => {
+    setSelectedLots(
+      (prev) =>
+        prev.find((i) => i._id === artwork._id)
+          ? prev.filter((i) => i._id !== artwork._id) // remove if already selectec
+          : [...prev, artwork], // add if not selcted
+    );
+  };
+
+  // Auction submit handler
+  const handleLaunchAuction = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    // at least one artwork must be selected
+    if (selectedLots.length === 0) return toast.error("Selection required.");
+
+    const auctionPromise = async () => {
+      const start = new Date(`${formData.startDate}T${formData.startTime}`);
+      const end = new Date(`${formData.endDate}T${formData.endTime}`);
+
+      // End date must be after start date
+      if (end <= start) throw new Error("Conclusion must follow Commencement.");
+
+      // API call to create auction
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/admin/auction/create`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            ...formData,
+            artworkIds: selectedLots.map((l) => l._id),
+            startDate: start.toISOString(),
+            endDate: end.toISOString(),
+          }),
+          credentials: "include",
+        },
+      );
+
+      const data = await res.json();
+      if (!res.ok || !data.success) throw new Error(data.error || "Failed");
+
+      // Redirect to scheduler after success
+      setTimeout(() => router.push("/admin/scheduler"), 2000);
+
+      return data;
     };
 
-    setSelectedLots((prev) =>
-      prev.find((item) => item.id === id)
-        ? prev.filter((item) => item.id !== id)
-        : [...prev, mockArtwork]
-    );
+    toast.promise(auctionPromise(), {
+      loading: "Orchestrating Exhibition Protocol...",
+      success: "Exhibition scheduled successfully.",
+      error: (err) => err.message,
+    });
   };
 
   return (
@@ -34,145 +97,91 @@ const CreateAuctionPage = () => {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onSelect={handleSelectArtwork}
-        selectedIds={selectedLots.map((l) => l.id)}
+        selectedIds={selectedLots.map((l) => l._id)}
       />
 
       <div className="max-w-7xl mx-auto space-y-16">
-        <section
-          className="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-10 border-b border-glass pb-12"
-          aria-label="Page Header"
+        <header className="flex justify-between items-end border-b border-glass pb-12">
+          <h1 className="text-7xl font-luxury leading-none">
+            Initiate <span className="italic text-brand">Exhibition.</span>
+          </h1>
+        </header>
+
+        <form
+          className="grid grid-cols-1 lg:grid-cols-12 gap-20"
+          onSubmit={handleLaunchAuction}
         >
-          <div className="space-y-4">
-            <div className="flex items-center gap-3">
-              <span className="w-8 h-px bg-brand" aria-hidden="true" />
-              <p className="font-jakarta text-brand text-[10px] font-bold uppercase tracking-[0.4em]">
-                Event Orchestration
-              </p>
-            </div>
-            <h1 className="text-6xl md:text-7xl font-luxury leading-none tracking-tight">
-              Initiate <span className="italic text-muted">Exhibition.</span>
-            </h1>
-          </div>
-
-          <div className="flex items-center gap-4">
-            <Button
-              title="Save Draft"
-              ariaLabel="Save exhibition as draft"
-              variant="ghost"
-              className="h-14"
-            />
-            <div
-              className="h-14 w-px bg-glass hidden md:block"
-              aria-hidden="true"
-            />
-            <Button
-              title="Launch Global Auction"
-              ariaLabel="Launch this exhibition to the global marketplace"
-              className={`h-14 px-10 text-[10px] font-bold tracking-widest transition-all ${
-                selectedLots.length > 0
-                  ? "shadow-neon opacity-100"
-                  : "opacity-50 cursor-not-allowed"
-              }`}
-              disabled={selectedLots.length === 0}
-            />
-          </div>
-        </section>
-
-        <form className="grid grid-cols-1 lg:grid-cols-12 gap-20">
           <div className="lg:col-span-7 space-y-16">
-            <fieldset className="space-y-10 border-none p-0 m-0">
-              <legend className="font-jakarta text-[10px] uppercase tracking-[0.4em] text-brand font-bold flex items-center gap-3 mb-8">
-                <span className="opacity-50 text-[8px]" aria-hidden="true">
-                  01.
-                </span>
-                Exhibition Identity
+            <fieldset className="space-y-10 border-none p-0">
+              <legend className="font-jakarta text-[10px] uppercase tracking-[0.4em] text-brand font-bold">
+                01. Identity
               </legend>
-              <div className="space-y-12">
-                <Input
-                  label="Exhibition Title"
-                  className={inputClass}
-                  placeholder="e.g., The Neo-Baroque Sequence"
-                  required
-                />
-                <div className="space-y-4">
-                  <label
-                    htmlFor="manifesto"
-                    className="font-jakarta text-[9px] uppercase tracking-widest text-dim font-bold"
-                  >
-                    Curatorial Manifesto
-                  </label>
-                  <textarea
-                    id="manifesto"
-                    rows={4}
-                    className={`${inputClass} leading-relaxed resize-none placeholder:text-white/20`}
-                    placeholder="Describe the conceptual framework..."
-                    required
-                  />
-                </div>
-              </div>
+              <Input
+                label="Exhibition Title"
+                className={inputClass.replace("cursor-pointer", "")}
+                value={formData.title}
+                onChange={(e) =>
+                  setFormData({ ...formData, title: e.target.value })
+                }
+                required
+              />
+              <textarea
+                rows={4}
+                className={`${inputClass.replace(
+                  "cursor-pointer",
+                  "",
+                )} leading-relaxed resize-none`}
+                placeholder="Curatorial Manifesto"
+                value={formData.description}
+                onChange={(e) =>
+                  setFormData({ ...formData, description: e.target.value })
+                }
+                required
+              />
             </fieldset>
 
-            <fieldset className="space-y-10 border-none p-0 m-0">
-              <div className="flex justify-between items-center mb-8">
-                <legend className="font-jakarta text-[10px] uppercase tracking-[0.4em] text-brand font-bold flex items-center gap-3">
-                  <span className="opacity-50 text-[8px]" aria-hidden="true">
-                    02.
-                  </span>
-                  Lot Sequencing
+            <fieldset className="space-y-10 border-none p-0">
+              <div className="flex justify-between items-center">
+                <legend className="font-jakarta text-[10px] uppercase text-brand font-bold">
+                  02. Lots
                 </legend>
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(true)}
-                  aria-label="Add artworks from curation pool"
-                  className="flex items-center gap-2 text-brand text-[9px] uppercase tracking-widest font-bold hover:text-white transition-colors min-h-11"
+                  className="text-brand text-[9px] uppercase tracking-widest font-bold flex items-center gap-2"
                 >
-                  <LuPlus size={14} aria-hidden="true" /> Open Curation Pool
+                  <LuPlus /> Open Curation Pool
                 </button>
               </div>
-
-              <div className="space-y-4" role="list">
+              <div className="space-y-4">
                 {selectedLots.length > 0 ? (
-                  selectedLots.map((lot, index) => (
+                  selectedLots.map((lot, i) => (
                     <article
-                      key={lot.id}
-                      role="listitem"
-                      className="p-6 bg-surface border border-glass flex items-center justify-between group"
+                      key={lot._id}
+                      className="p-6 bg-surface border border-glass flex justify-between items-center"
                     >
                       <div className="flex items-center gap-6">
-                        <span
-                          className="font-mono text-[10px] text-brand"
-                          aria-label={`Position ${index + 1}`}
-                        >
-                          #{index + 1}
+                        <span className="text-brand font-mono text-[10px]">
+                          #{i + 1}
                         </span>
-                        <div className="space-y-1">
-                          <h4 className="font-luxury text-xl m-0">
-                            {lot.title}
-                          </h4>
-                          <p className="font-jakarta text-[9px] text-dim uppercase m-0">
-                            {lot.artist}
+                        <div>
+                          <h4 className="font-luxury text-xl">{lot.title}</h4>
+                          <p className="text-dim text-[9px] uppercase tracking-widest">
+                            {lot.artist?.firstName} {lot.artist?.lastName}
                           </p>
                         </div>
                       </div>
-                      <div className="flex items-center gap-8">
-                        <p className="font-luxury text-xl m-0">{lot.val}</p>
-                        <button
-                          type="button"
-                          aria-label={`Remove ${lot.title} from sequence`}
-                          onClick={() => handleSelectArtwork(lot.id)}
-                          className="w-10 h-10 flex items-center justify-center text-dim hover:text-red-500 transition-colors"
-                        >
-                          <LuTrash2 size={16} aria-hidden="true" />
-                        </button>
-                      </div>
+                      <button
+                        onClick={() => handleSelectArtwork(lot)}
+                        className="text-dim hover:text-red-500"
+                      >
+                        <LuTrash2 size={16} />
+                      </button>
                     </article>
                   ))
                 ) : (
-                  <div className="p-16 border border-dashed border-glass flex flex-col items-center justify-center space-y-4 text-white/20">
-                    <LuGavel size={32} aria-hidden="true" />
-                    <p className="font-jakarta text-[9px] uppercase tracking-[0.4em]">
-                      No Masterpieces Selected
-                    </p>
+                  <div className="p-16 border border-dashed border-glass text-center text-white/20 uppercase text-[9px] tracking-widest">
+                    <LuGavel size={32} className="mx-auto mb-4" /> No Selection
                   </div>
                 )}
               </div>
@@ -180,67 +189,80 @@ const CreateAuctionPage = () => {
           </div>
 
           <aside className="lg:col-span-5">
-            <div className="sticky top-32 space-y-8">
-              <section className="p-10 border border-glass bg-surface space-y-10 shadow-2xl relative">
-                <div
-                  className="absolute top-0 left-0 w-1 h-full bg-brand"
-                  aria-hidden="true"
-                />
-                <h2 className="font-luxury text-3xl">Temporal Gates</h2>
-                <div className="space-y-8">
-                  <div className="space-y-6">
-                    <label
-                      htmlFor="exec-date"
-                      className="font-jakarta text-[10px] font-bold uppercase tracking-widest"
-                    >
-                      Execution Date
-                    </label>
+            <div className="sticky top-32 p-10 border border-glass bg-surface space-y-12 overflow-hidden shadow-2xl">
+              <div className="absolute top-0 left-0 w-1 h-full bg-brand" />
+              <h2 className="font-luxury text-3xl">Temporal Gates</h2>
+              <div className="space-y-10">
+                <div className="space-y-4">
+                  <label className="text-brand text-[10px] font-bold uppercase tracking-widest flex items-center gap-2">
+                    <LuCalendar size={14} /> Commencement
+                  </label>
+                  <div className="grid grid-cols-2 gap-4">
                     <input
                       type="date"
-                      id="exec-date"
                       className={inputClass}
+                      onClick={(e) => e.currentTarget.showPicker()}
+                      onChange={(e) =>
+                        setFormData({ ...formData, startDate: e.target.value })
+                      }
+                      required
+                    />
+                    <input
+                      type="time"
+                      className={inputClass}
+                      onClick={(e) => e.currentTarget.showPicker()}
+                      onChange={(e) =>
+                        setFormData({ ...formData, startTime: e.target.value })
+                      }
                       required
                     />
                   </div>
-                  <div className="grid grid-cols-2 gap-8">
-                    <div className="space-y-4">
-                      <input
-                        type="time"
-                        id="start-time"
-                        className={inputClass}
-                        title="Start Time"
-                        required
-                      />
-                    </div>
-                    <div className="space-y-4">
-                      <input
-                        type="time"
-                        id="end-time"
-                        className={inputClass}
-                        title="End Time"
-                        required
-                      />
-                    </div>
-                  </div>
-                  <div className="space-y-4">
-                    <label htmlFor="auction-type" className="sr-only">
-                      Auction Protocol
-                    </label>
-                    <select id="auction-type" className={`${inputClass}`}>
-                      <option>Standard Ascending (English)</option>
-                      <option>Dutch (Falling Price)</option>
-                    </select>
+                </div>
+                <div className="space-y-4">
+                  <label className="text-muted text-[10px] font-bold uppercase tracking-widest flex items-center gap-2">
+                    <LuClock size={14} /> Conclusion
+                  </label>
+                  <div className="grid grid-cols-2 gap-4">
+                    <input
+                      type="date"
+                      className={inputClass}
+                      onClick={(e) => e.currentTarget.showPicker()}
+                      onChange={(e) =>
+                        setFormData({ ...formData, endDate: e.target.value })
+                      }
+                      required
+                    />
+                    <input
+                      type="time"
+                      className={inputClass}
+                      onClick={(e) => e.currentTarget.showPicker()}
+                      onChange={(e) =>
+                        setFormData({ ...formData, endTime: e.target.value })
+                      }
+                      required
+                    />
                   </div>
                 </div>
-                <div className="pt-8 border-t border-glass">
-                  <div className="flex items-center gap-3 p-4 bg-emerald-500/5 border border-emerald-500/10 text-emerald-400">
-                    <LuShieldCheck size={18} aria-hidden="true" />
-                    <p className="font-jakarta text-[9px] font-bold uppercase tracking-widest">
-                      Protocol: Ready
-                    </p>
-                  </div>
-                </div>
-              </section>
+              </div>
+              <div
+                className={`p-4 border text-[9px] font-bold uppercase tracking-widest flex items-center gap-3 transition-all ${
+                  selectedLots.length > 0
+                    ? "bg-emerald-500/5 border-emerald-500/10 text-emerald-400"
+                    : "bg-white/5 border-white/10 text-dim"
+                }`}
+              >
+                <LuShieldCheck size={18} /> Protocol:{" "}
+                {selectedLots.length > 0 ? "Ready" : "Staging"}
+              </div>
+
+              <Button
+                type="submit"
+                title="Launch Global Auction"
+                className={`h-14 w-full px-10 transition-all ${
+                  selectedLots.length > 0 ? "shadow-neon" : "opacity-50"
+                }`}
+                disabled={selectedLots.length === 0}
+              />
             </div>
           </aside>
         </form>
