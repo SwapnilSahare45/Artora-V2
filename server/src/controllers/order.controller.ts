@@ -155,6 +155,10 @@ export const createOrder = async (req: AuthRequest, res: Response) => {
       orderStatus: "created",
     });
 
+    // Mark artwork as sold
+    artwork.status = "sold";
+    await artwork.save();
+
     return res.status(201).json({
       success: true,
       message: "Acquisition successfully secured within the Artora Protocol.",
