@@ -24,6 +24,7 @@ export async function proxy(request: NextRequest) {
     pathname.startsWith(route)
   );
   const isAuthRoute = authRoutes.some((route) => pathname.startsWith(route));
+  const isAdminRoute = pathname.startsWith("/admin");
 
   // Allow public routes for everyone
   if (isHomePage || isPublicRoute) {
@@ -34,6 +35,12 @@ export async function proxy(request: NextRequest) {
 
   // Handle Auth Routes
   if (isAuthRoute) {
+    // Admin login redirect
+    if (authResult?.isAuthenticated && userRole === "admin") {
+      return NextResponse.redirect(new URL("/admin/verification", request.url));
+    }
+
+    // Normal users redirect
     if (authResult?.isAuthenticated) {
       return NextResponse.redirect(new URL("/artworks", request.url));
     }
@@ -51,10 +58,13 @@ export async function proxy(request: NextRequest) {
   // Using "rewrite" to keep the URL exactly same to make it page simply doesn't exit at all
   const notFound = () => NextResponse.rewrite(new URL("/404", request.url));
 
-  // Admin can access everything
+  // Admin can only access admin routes
   if (userRole === "admin") {
+    if (!isAdminRoute) return notFound();
     return NextResponse.next({ request: { headers: requestHeaders } });
   }
+
+  if (isAdminRoute && userRole !== "admin") return notFound();
 
   // Artist cannot access /checkout or /dashboard/collector
   if (userRole === "artist") {
@@ -80,14 +90,7 @@ export async function proxy(request: NextRequest) {
     }
   }
 
-  // Admin route protection
-  if (pathname.startsWith("/admin") && userRole !== "admin") {
-    // For redirect to /artworks
-    // return NextResponse.redirect(new URL("/artworks", request.url));
-
-    // For Not Found illusion
-    return notFound();
-  }
+  // Allow everything else
   return NextResponse.next({
     request: {
       headers: requestHeaders,

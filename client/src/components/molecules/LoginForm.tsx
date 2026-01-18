@@ -35,8 +35,10 @@ const LoginForm = () => {
       // Clear form fields after successful login
       reset();
 
-      // Redirect user to artworks page
-      window.location.href = "/artworks";
+      // Redirect user based on role
+      result.user.role === "admin"
+        ? (window.location.href = "/admin/moderation")
+        : (window.location.href = "/artworks");
 
       return result;
     };

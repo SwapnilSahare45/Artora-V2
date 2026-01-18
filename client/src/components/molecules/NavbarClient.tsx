@@ -25,22 +25,23 @@ const NavbarClient = ({ userRole }: NavbarProps) => {
     { name: "Collection", href: "/artworks" },
     { name: "Live Floor", href: "/auctions" },
     { name: "My Bids", href: "/dashboard/collector/bids" },
-    { name: "Artists", href: "/artists" },
+    { name: "My Vault", href: "/dashboard/collector/vault" },
+    { name: "Orders", href: "/dashboard/collector/history" },
   ];
 
   const artistLinks = [
-    { name: "Studio", href: "/dashboard/artist/deposit" },
     { name: "Artworks", href: "/artworks" },
+    { name: "Live Floor", href: "/auctions" },
+    { name: "Studio", href: "/dashboard/artist/deposit" },
     { name: "My Gallery", href: "/dashboard/artist/gallery" },
-    { name: "Artists", href: "/artists" },
   ];
 
   const activeLinks =
     userRole === "artist"
       ? artistLinks
       : userRole === "collector"
-      ? collectorLinks
-      : guestLinks;
+        ? collectorLinks
+        : guestLinks;
 
   useEffect(() => setIsOpen(false), [pathname]);
 

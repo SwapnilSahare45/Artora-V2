@@ -3,27 +3,40 @@
 import AuctionTimer from "../atoms/AuctionTimer";
 import Button from "../atoms/Button";
 
-const AuctionCard = () => {
+type AuctionCardProps = {
+  auction: {
+    _id: string;
+    title: string;
+    description: string;
+    endDate: string | Date;
+  };
+  children?: React.ReactNode;
+};
+
+const AuctionCard = ({ auction, children }: AuctionCardProps) => {
   return (
     <article className="space-y-16">
       <div className="space-y-6">
         <h1 className="text-6xl md:text-7xl lg:text-9xl font-luxury leading-[0.85] tracking-tighter">
-          The Winter <br />
-          <span className="italic text-brand">Modernism</span>.
+          {auction.title.split(" ").slice(0, 1).join(" ")} <br />
+          <span className="italic text-brand">
+            {auction.title.split(" ").slice(1).join(" ")}.
+          </span>
         </h1>
+
         <p className="max-w-md font-jakarta text-muted text-sm leading-relaxed tracking-wide">
-          A curated sequence of 12 original masterpieces from the Barcelona
-          Underground collective. Bidding is now active for registered
-          collectors.
+          {auction.description}
         </p>
       </div>
 
       <div className="flex flex-wrap gap-6 items-center">
-        <Button
-          title="Join Auction"
-          ariaLabel="Join the Winter Modernism live auction"
-          className="h-16 px-12 text-[10px]! shadow-neon"
-        />
+        {children ?? (
+          <Button
+            title="Join Auction"
+            ariaLabel={`Join ${auction.title} live auction`}
+            className="h-16 px-12 text-[10px]! shadow-neon"
+          />
+        )}
 
         {/* Timer Container */}
         <div
@@ -34,7 +47,7 @@ const AuctionCard = () => {
             Ends In
           </p>
           <div className="min-w-30 font-mono font-bold text-xl tracking-widest">
-            <AuctionTimer targetDate={new Date(Date.now() + 5000000)} />
+            <AuctionTimer targetDate={new Date(auction.endDate)} />
           </div>
         </div>
       </div>

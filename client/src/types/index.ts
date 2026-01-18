@@ -48,6 +48,7 @@ export interface IArtwork {
   price?: number; // If salePath === "direct"
   openingBid?: number; // If salePath === "auction"
   reservePrice?: number; // If salePath === "auction"
+  auctionId?: any;
   status: "pending" | "verified" | "sold" | "rejected";
   isFeatured: boolean;
   createdAt: Date;

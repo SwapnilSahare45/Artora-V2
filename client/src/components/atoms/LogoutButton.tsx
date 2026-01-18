@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { LuLogOut } from "react-icons/lu";
 import { toast } from "sonner";
 
@@ -19,7 +18,7 @@ const LogoutButton = () => {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           credentials: "include",
-        }
+        },
       );
 
       if (!response.ok) {

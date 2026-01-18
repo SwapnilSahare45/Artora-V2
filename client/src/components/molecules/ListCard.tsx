@@ -78,9 +78,7 @@ const ListCard = ({ artwork }: ListCardProps) => {
               aria-label="Auction time remaining"
             >
               <div className="flex items-center gap-2 text-brand">
-                <AuctionTimer
-                  targetDate={new Date(Date.now() + 24 * 60 * 60 * 1000)}
-                />
+                <AuctionTimer targetDate={artwork.auctionId?.endDate} />
               </div>
             </div>
           )}
@@ -138,33 +136,18 @@ const ListCard = ({ artwork }: ListCardProps) => {
             </div>
           </div>
 
-          {/* Action Buttons */}
-          <div className="flex gap-3">
-            <Link
-              href={`/artworks/${artwork._id}`}
-              className="flex-1 sm:flex-none"
-            >
-              <Button
-                title="Details"
-                ariaLabel={`View ${artwork.title} details`}
-                variant="outline"
-                className="px-6 h-12 text-[10px] w-full sm:w-auto"
-              />
-            </Link>
-            {isAuction ? (
-              <Button
-                title="Place Bid"
-                ariaLabel={`Place bid on ${artwork.title}`}
-                className="px-10 h-12 text-[10px] shadow-neon flex-1 sm:flex-none"
-              />
-            ) : (
-              <Button
-                title="Purchase"
-                ariaLabel={`Purchase ${artwork.title}`}
-                className="px-10 h-12 text-[10px] shadow-neon flex-1 sm:flex-none"
-              />
-            )}
-          </div>
+          {/* Action Button */}
+          <Link
+            href={`/artworks/${artwork._id}`}
+            className="flex-1 sm:flex-none"
+          >
+            <Button
+              title="Details"
+              ariaLabel={`View ${artwork.title} details`}
+              variant="outline"
+              className="px-6 h-12 text-[10px] w-full sm:w-auto"
+            />
+          </Link>
         </div>
 
         {/* Artwork ID */}

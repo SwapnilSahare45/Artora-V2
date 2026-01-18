@@ -47,8 +47,8 @@ const GridCard = ({ artwork }: GridCardProps) => {
               isAuction
                 ? "bg-brand"
                 : artwork.status === "verified"
-                ? "bg-green-600"
-                : "bg-yellow-600"
+                  ? "bg-green-600"
+                  : "bg-yellow-600"
             }`}
           >
             {isAuction ? "Live Auction" : "Available"}
@@ -59,9 +59,7 @@ const GridCard = ({ artwork }: GridCardProps) => {
         {isAuction && (
           <div className="absolute bottom-0 left-0 w-full p-4 bg-linear-to-t from-black/80 to-transparent">
             <div className="flex items-center gap-2 text-brand">
-              <AuctionTimer
-                targetDate={new Date(Date.now() + 24 * 60 * 60 * 1000)}
-              />
+              <AuctionTimer targetDate={artwork.auctionId?.endDate} />
             </div>
           </div>
         )}
