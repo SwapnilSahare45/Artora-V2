@@ -9,6 +9,7 @@ import artworkRoutes from "./routes/artwork.routes";
 import adminRoutes from "./routes/admin.routes";
 import auctionRoutes from "./routes/auction.routes";
 import orderRoutes from "./routes/order.routes";
+import { initCronJobs } from "./workers/auction.worker";
 
 const app: Application = express();
 
@@ -17,7 +18,7 @@ app.use(
   cors({
     origin: "http://localhost:3000",
     credentials: true,
-  })
+  }),
 );
 app.use(cookieParser());
 app.use(express.json());
@@ -34,6 +35,7 @@ app.use("/api/admin", adminRoutes);
 const startServer = async () => {
   try {
     await connectDB();
+    initCronJobs();
 
     const PORT = process.env.PORT || 4500;
     app.listen(PORT, () => {
