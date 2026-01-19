@@ -24,7 +24,6 @@ const NavbarClient = ({ userRole }: NavbarProps) => {
   const collectorLinks = [
     { name: "Collection", href: "/artworks" },
     { name: "Live Floor", href: "/auctions" },
-    { name: "My Bids", href: "/dashboard/collector/bids" },
     { name: "Orders", href: "/dashboard/collector/history" },
   ];
 

@@ -1,209 +1,197 @@
-import { Metadata } from "next";
-import { Suspense } from "react";
+import Image from "next/image";
 import { cookies } from "next/headers";
-import SalesTable from "@/components/molecules/SalesTable";
-import Search from "@/components/molecules/Search";
-import { LuCircleDollarSign } from "react-icons/lu";
+import { LuPackage, LuShieldCheck, LuTruck } from "react-icons/lu";
+import { BiCheckCircle } from "react-icons/bi";
+import { FiAlertCircle } from "react-icons/fi";
 
-export const metadata: Metadata = {
-  title: "Sales Ledger | Artist Dashboard | Artora",
-  description:
-    "Review your acquisition history, track pending payments, and export financial statements for your artistic career.",
+// Helper to get status styles
+const getStatusConfig = (status: string) => {
+  switch (status) {
+    case "awaiting_details":
+      return {
+        label: "Pending Info",
+        icon: FiAlertCircle,
+        color: "text-brand",
+        bg: "bg-brand/10",
+        border: "border-brand/50",
+      };
+    case "created":
+      return {
+        label: "New Order",
+        icon: LuPackage,
+        color: "text-blue-400",
+        bg: "bg-blue-400/10",
+        border: "border-blue-400/30",
+      };
+    case "confirmed":
+      return {
+        label: "Authenticating",
+        icon: LuShieldCheck,
+        color: "text-emerald-400",
+        bg: "bg-emerald-400/10",
+        border: "border-emerald-400/30",
+      };
+    case "shipped":
+      return {
+        label: "In Transit",
+        icon: LuTruck,
+        color: "text-amber-400",
+        bg: "bg-amber-400/10",
+        border: "border-amber-400/30",
+      };
+    case "delivered":
+      return {
+        label: "Delivered",
+        icon: BiCheckCircle,
+        color: "text-white",
+        bg: "bg-white/10",
+        border: "border-white/30",
+      };
+    default:
+      return {
+        label: status,
+        icon: FiAlertCircle,
+        color: "text-dim",
+        bg: "bg-glass",
+        border: "border-glass",
+      };
+  }
 };
 
-interface Order {
-  _id: string;
-  artwork: {
-    title: string;
-    price: number;
-  };
-  buyer: {
-    firstName: string;
-    lastName: string;
-  };
-  amount: number;
-  orderStatus: string;
-  paymentStatus: string;
-  createdAt: string;
-}
-
-interface SalesStats {
-  netRevenue: number;
-  pendingSettlement: number;
-  platformFees: number;
-  totalOrders: number;
-  settledOrders: number;
-  pendingOrders: number;
-}
-
-// Fetch artist orders
-async function getArtistOrders(): Promise<Order[]> {
+const ArtistSalesPage = async () => {
   const cookieStore = await cookies();
 
-  try {
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/orders/artist`,
-      {
-        headers: {
-          Cookie: cookieStore.toString(),
-        },
-        cache: "no-store",
-      },
-    );
-
-    if (!response.ok) {
-      return [];
-    }
-
-    const data = await response.json();
-    return data.orders || [];
-  } catch (error) {
-    console.error("Error fetching artist orders:", error);
-    return [];
-  }
-}
-
-// Calculate sales statistics
-function calculateStats(orders: Order[]): SalesStats {
-  const settledOrders = orders.filter(
-    (o) => o.orderStatus === "delivered" && o.paymentStatus === "paid",
+  // Fetch Artist Sales
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/api/orders/artist`,
+    {
+      headers: { Cookie: cookieStore.toString() },
+      cache: "no-store",
+    },
   );
-  const inTransitOrders = orders.filter(
-    (o) => o.orderStatus === "shipped" || o.orderStatus === "confirmed",
-  );
-  const totalRevenue = orders.reduce((sum, order) => sum + order.amount, 0);
 
-  const netRevenue = settledOrders.reduce(
-    (sum, order) => sum + order.amount,
-    0,
-  );
-  const pendingSettlement = inTransitOrders.reduce(
-    (sum, order) => sum + order.amount,
-    0,
-  );
-  const platformFees = netRevenue * 0.03; // 3% platform fee
-
-  return {
-    netRevenue,
-    pendingSettlement,
-    platformFees,
-    totalOrders: orders.length,
-    settledOrders: settledOrders.length,
-    pendingOrders: inTransitOrders.length,
-  };
-}
-
-// Stats Loading Component
-function StatsLoading() {
-  return (
-    <dl className="grid grid-cols-1 md:grid-cols-4 gap-px bg-glass border border-glass shadow-2xl m-0">
-      {[1, 2, 3, 4].map((i) => (
-        <div key={i} className="p-10 space-y-4 animate-pulse">
-          <div className="h-3 w-24 bg-white/10 rounded" />
-          <div className="h-8 w-32 bg-white/10 rounded" />
-          <div className="h-2 w-20 bg-white/10 rounded" />
-        </div>
-      ))}
-    </dl>
-  );
-}
-
-// Stats Component
-async function StatsSection() {
-  const orders = await getArtistOrders();
-  const stats = calculateStats(orders);
-
-  // Calculate percentage change (mock for now - would need historical data)
-  const revenueChange = stats.settledOrders > 0 ? "+12%" : "0%";
+  if (!res.ok) throw new Error("Failed to load sales ledger.");
+  const { orders }: { orders: any[] } = await res.json();
 
   return (
-    <dl className="grid grid-cols-1 md:grid-cols-4 gap-px bg-glass border border-glass shadow-2xl m-0">
-      {[
-        {
-          label: "Total Sales",
-          value: stats.totalOrders.toString(),
-          sub: `${stats.settledOrders} Delivered`,
-        },
-        {
-          label: "Net Revenue",
-          value: `₹${stats.netRevenue.toLocaleString()}`,
-          sub: `${revenueChange} vs last month`,
-        },
-        {
-          label: "In Transit",
-          value: `₹${stats.pendingSettlement.toLocaleString()}`,
-          sub: `${stats.pendingOrders} Order${stats.pendingOrders !== 1 ? "s" : ""}`,
-        },
-        {
-          label: "Platform Fees",
-          value: `₹${Math.floor(stats.platformFees).toLocaleString()}`,
-          sub: "3% Protocol Fee",
-        },
-      ].map((stat, i) => (
-        <div key={i} className="p-10 space-y-4 relative overflow-hidden group">
-          <div
-            className="absolute -right-4 -bottom-4 text-white/2 group-hover:text-brand/5 transition-colors duration-700"
-            aria-hidden="true"
-          >
-            <LuCircleDollarSign size={120} />
-          </div>
-          <dt className="font-jakarta text-[9px] uppercase tracking-widest text-dim">
-            {stat.label}
-          </dt>
-          <dd className="m-0 space-y-1">
-            <p className="font-luxury text-4xl">{stat.value}</p>
-            <p className="font-jakarta text-[8px] uppercase tracking-widest text-brand/70 font-bold">
-              {stat.sub}
-            </p>
-          </dd>
-        </div>
-      ))}
-    </dl>
-  );
-}
-
-const SalesLedgerPage = () => {
-  return (
-    <main className="min-h-screen pt-12 pb-20 px-6 md:px-10">
-      <div className="max-w-7xl mx-auto space-y-16">
-        <section className="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-10 border-b border-glass pb-12">
+    <main className="min-h-screen pt-24 pb-20 px-6 md:px-10 bg-black text-white">
+      <div className="max-w-7xl mx-auto space-y-12">
+        {/* Header Section */}
+        <header className="flex flex-col md:flex-row justify-between items-start md:items-end gap-8 border-b border-glass pb-12">
           <div className="space-y-4">
             <div className="flex items-center gap-3">
-              <span className="w-8 h-px bg-brand" aria-hidden="true" />
+              <span className="w-8 h-px bg-brand" />
               <p className="font-jakarta text-brand text-[10px] font-bold uppercase tracking-[0.4em]">
-                Financial Protocol
+                Artist Records
               </p>
             </div>
-            <h1 className="text-6xl md:text-7xl font-luxury leading-none tracking-tight">
-              Sales <span className="italic text-muted">Ledger.</span>
+            <h1 className="text-6xl md:text-8xl font-luxury">
+              Sales <span className="italic text-brand">Ledger.</span>
             </h1>
           </div>
-        </section>
 
-        {/* Revenue Overview Stats */}
-        <section aria-label="Financial Overview">
-          <Suspense fallback={<StatsLoading />}>
-            <StatsSection />
-          </Suspense>
-        </section>
+          <div className="flex gap-4 w-full md:w-auto">
+            <div className="flex-1 md:w-40 p-4 border border-glass bg-surface/30 text-center">
+              <p className="text-[8px] uppercase text-dim tracking-widest mb-1">
+                Total Sales
+              </p>
+              <p className="font-luxury text-2xl">{orders.length}</p>
+            </div>
+          </div>
+        </header>
 
-        {/* Transaction Table */}
-        <section className="space-y-8" aria-label="Transaction History">
-          <Search />
+        {/* Sales List */}
+        <div className="grid grid-cols-1 gap-6">
+          {orders.length === 0 ? (
+            <div className="py-40 text-center border border-dashed border-glass">
+              <p className="font-luxury text-2xl text-dim italic">
+                No sales recorded in the ledger yet.
+              </p>
+            </div>
+          ) : (
+            orders.map((order) => {
+              const status = getStatusConfig(order.orderStatus);
+              const StatusIcon = status.icon;
 
-          <Suspense
-            fallback={
-              <div className="w-full h-96 flex items-center justify-center border border-glass bg-surface/10">
-                <div className="w-12 h-12 border-t-2 border-brand rounded-full animate-spin" />
-              </div>
-            }
-          >
-            <SalesTable />
-          </Suspense>
-        </section>
+              return (
+                <article
+                  key={order._id}
+                  className="relative flex flex-col lg:flex-row items-center justify-between p-8 border border-glass bg-surface/50 transition-all duration-500 gap-8 overflow-hidden hover:border-white/20"
+                >
+                  {/* Artwork Info */}
+                  <div className="flex items-center gap-8 w-full lg:w-1/3">
+                    <div className="relative w-28 h-28 shrink-0 border border-glass bg-glass overflow-hidden">
+                      <Image
+                        src={order.artwork.imageURL}
+                        alt={order.artwork.title}
+                        fill
+                        className="object-cover grayscale hover:grayscale-0 transition-all duration-700"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <p className="font-mono text-[9px] text-white/20 tracking-tighter uppercase">
+                        ID: {order._id.slice(-10).toUpperCase()}
+                      </p>
+                      <h2 className="font-luxury text-3xl tracking-wide">
+                        {order.artwork.title}
+                      </h2>
+                      <p className="font-jakarta text-[10px] text-dim uppercase tracking-[0.2em] italic">
+                        Buyer: {order.buyer.firstName} {order.buyer.lastName}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Value & Date */}
+                  <div className="flex flex-1 justify-between items-center w-full max-w-xl px-4 md:border-x border-glass/10">
+                    <div className="space-y-1">
+                      <p className="text-[8px] uppercase text-dim tracking-widest font-bold">
+                        Sale Amount
+                      </p>
+                      <p className="font-luxury text-3xl text-white">
+                        ₹{order.amount.toLocaleString("en-IN")}
+                      </p>
+                    </div>
+                    <div className="space-y-1 text-right md:text-left">
+                      <p className="text-[8px] uppercase text-dim tracking-widest font-bold">
+                        Date of Sale
+                      </p>
+                      <p className="font-jakarta text-[11px] uppercase tracking-tighter text-white/80">
+                        {new Date(order.createdAt).toLocaleDateString("en-GB", {
+                          day: "2-digit",
+                          month: "short",
+                          year: "numeric",
+                        })}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Status Section */}
+                  <div className="w-full lg:w-1/4 flex flex-col items-center lg:items-end gap-4">
+                    <div
+                      className={`flex items-center gap-3 px-8 py-4 border rounded-none w-full lg:w-auto justify-center ${status.bg} ${status.border}`}
+                    >
+                      <StatusIcon className={status.color} size={18} />
+                      <span
+                        className={`font-jakarta text-[10px] font-bold uppercase tracking-[0.2em] ${status.color}`}
+                      >
+                        {status.label}
+                      </span>
+                    </div>
+                    <p className="text-[8px] text-dim uppercase tracking-widest flex items-center gap-2">
+                      Order{" "}
+                      {order.paymentStatus === "paid"
+                        ? "Settled"
+                        : "Processing"}
+                    </p>
+                  </div>
+                </article>
+              );
+            })
+          )}
+        </div>
       </div>
     </main>
   );
 };
 
-export default SalesLedgerPage;
+export default ArtistSalesPage;
