@@ -25,7 +25,6 @@ const NavbarClient = ({ userRole }: NavbarProps) => {
     { name: "Collection", href: "/artworks" },
     { name: "Live Floor", href: "/auctions" },
     { name: "My Bids", href: "/dashboard/collector/bids" },
-    { name: "My Vault", href: "/dashboard/collector/vault" },
     { name: "Orders", href: "/dashboard/collector/history" },
   ];
 

@@ -126,7 +126,6 @@ export const getAllVerifiedArtworks = async (req: Request, res: Response) => {
 
       Artwork.countDocuments(filter),
     ]);
-    console.log(artworks);
 
     // Calculate pegination info
     const totalPages = Math.ceil(totalCount / limitNum);
@@ -163,6 +162,7 @@ export const getArtworkById = async (req: Request, res: Response) => {
     // Find artwork by id
     const artwork: IArtwork | null = await Artwork.findById(id)
       .populate("artist", "firstName lastName avatar bio")
+      .populate("auctionId", "status startDate endDate")
       .lean();
 
     // If artwork not found

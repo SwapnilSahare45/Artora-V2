@@ -5,7 +5,7 @@ import { AuthRequest } from "../types";
 export const protect = (
   req: AuthRequest,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     // Get token from cookie
