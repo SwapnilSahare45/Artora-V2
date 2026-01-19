@@ -1,11 +1,9 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
-import AuctionTimer from "@/components/atoms/AuctionTimer";
-import Button from "@/components/atoms/Button";
 import Image from "next/image";
 import { LuHeart, LuInfo, LuShare2 } from "react-icons/lu";
 import { IArtwork } from "@/types";
-import Link from "next/link";
+import BidSection from "@/components/molecules/BidSection";
 
 interface ArtworkPageProps {
   params: Promise<{ id: string }>;
@@ -14,11 +12,10 @@ interface ArtworkPageProps {
 // Fetch artwork data from API
 async function getArtwork(id: string): Promise<IArtwork | null> {
   try {
-    // API call
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/api/artworks/${id}`,
       {
-        cache: "no-store", // Always fetch fresh data
+        cache: "no-store",
         next: { revalidate: 0 },
       },
     );
@@ -64,7 +61,7 @@ export async function generateMetadata({
   };
 }
 
-// Main page
+// Main page - Server Component
 const ArtworkPage = async ({ params }: ArtworkPageProps) => {
   const { id } = await params;
   const artwork = await getArtwork(id);
@@ -73,24 +70,14 @@ const ArtworkPage = async ({ params }: ArtworkPageProps) => {
     notFound();
   }
 
-  // Normalize price based on sale type
-  // Auction -> opening bid
-  // Direct sale -> fixed price
-  const isAuction = artwork.salePath === "auction";
-  const displayPrice = isAuction ? artwork.openingBid || 0 : artwork.price || 0;
-
-  // Normalize artist name
+  // Normalize artist data
   const artistName =
     typeof artwork.artist === "object"
       ? `${artwork.artist.firstName} ${artwork.artist.lastName}`
       : "Unknown Artist";
 
-  // Normalize artist avatar
   const artistAvatar =
     typeof artwork.artist === "object" ? artwork.artist.avatar : null;
-
-  // Calculate minimum next bid (10% increment for auctions)
-  const minNextBid = isAuction ? Math.floor(displayPrice * 1.1) : displayPrice;
 
   return (
     <main className="min-h-screen antialiased mb-4 md:mb-0 md:py-20 px-6 md:px-10 grid grid-cols-1 lg:grid-cols-2 gap-12">
@@ -167,67 +154,14 @@ const ArtworkPage = async ({ params }: ArtworkPageProps) => {
           </div>
         </header>
 
-        {/* Pricing & Action */}
-        <article className="p-8 md:p-12 bg-surface border border-glass space-y-10">
-          <div className="flex flex-col md:flex-row justify-between items-start gap-8">
-            <div className="space-y-1">
-              <p className="font-jakarta text-[10px] uppercase tracking-widest text-brand font-bold">
-                {isAuction ? "Current Bid" : "Price"}
-              </p>
-              <p className="text-6xl font-bold tracking-tighter">
-                ₹{displayPrice.toLocaleString()}
-              </p>
-            </div>
-
-            {isAuction && (
-              <div className="w-full md:w-auto">
-                <p className="font-jakarta text-[10px] uppercase tracking-widest text-dim mb-3">
-                  Ends In
-                </p>
-                <div className="bg-brand px-6 py-3 font-mono text-lg font-bold shadow-neon inline-block">
-                  <AuctionTimer
-                    targetDate={new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)}
-                  />
-                </div>
-              </div>
-            )}
-          </div>
-
-          <form className="space-y-4">
-            {isAuction ? (
-              <>
-                <div className="relative group">
-                  <span className="absolute left-6 top-1/2 -translate-y-1/2 text-brand font-luxury text-2xl group-focus-within:scale-110 transition-transform">
-                    ₹
-                  </span>
-                  <input
-                    type="number"
-                    aria-label="Bid Amount"
-                    placeholder="Enter custom bid amount"
-                    min={minNextBid}
-                    className="w-full bg-bg-primary border border-glass p-6 pl-12 font-jakarta outline-none focus:border-brand focus:bg-surface transition-all placeholder:text-white/30"
-                  />
-                </div>
-                <Button
-                  title="Place Binding Bid"
-                  type="submit"
-                  className="w-full h-16 text-[12px]! tracking-[0.3em]! shadow-neon"
-                />
-                <p className="text-center font-jakarta text-[9px] text-dim uppercase tracking-widest">
-                  Minimum Next Bid: ₹{minNextBid.toLocaleString()}
-                </p>
-              </>
-            ) : (
-              <Link href={`/checkout/${artwork._id}`}>
-                <Button
-                  title="Purchase Now"
-                  type="submit"
-                  className="w-full h-16 text-[12px]! tracking-[0.3em]! shadow-neon"
-                />
-              </Link>
-            )}
-          </form>
-        </article>
+        {/* Pricing & Action - Client Component */}
+        <BidSection
+          artworkId={artwork._id}
+          initialBid={artwork.openingBid || 0}
+          salePath={artwork.salePath}
+          price={artwork.price}
+          endDate={artwork.auctionId?.endDate}
+        />
 
         {/* Specifications */}
         <section className="space-y-10 px-2">
