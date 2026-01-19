@@ -165,15 +165,21 @@ export interface IOrder {
   auction?: mongoose.Schema.Types.ObjectId;
   amount: number;
   shipping: {
-    name: string;
-    phone: string;
-    address: string;
-    city: string;
-    postal: string;
+    name?: string;
+    phone?: string;
+    address?: string;
+    city?: string;
+    postal?: string;
   };
   paymentMethod: "cod" | "upi" | "card" | "wallet";
   paymentStatus: "pending" | "paid" | "failed" | "refunded";
-  orderStatus: "created" | "confirmed" | "shipped" | "delivered" | "cancelled";
+  orderStatus:
+    | "awaiting_details"
+    | "created"
+    | "confirmed"
+    | "shipped"
+    | "delivered"
+    | "cancelled";
   createdAt: Date;
   updatedAt: Date;
 }

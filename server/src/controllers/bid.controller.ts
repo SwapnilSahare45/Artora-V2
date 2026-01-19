@@ -6,11 +6,10 @@ import { io } from "../server";
 
 export const placeBid = async (req: AuthRequest, res: Response) => {
   try {
-    // Validate user authentication and role
     if (!req.user?.userId || req.user.role !== "collector") {
       return res.status(403).json({
         success: false,
-        error: "Only collectors can place bids",
+        error: "Vault Access Denied: Only verified collectors may place bids.",
       });
     }
 
@@ -20,7 +19,8 @@ export const placeBid = async (req: AuthRequest, res: Response) => {
     if (!artworkId || !amount) {
       return res.status(400).json({
         success: false,
-        error: "Artwork ID and bid amount are required",
+        error:
+          "Protocol Error: Missing asset identification or valuation amount.",
       });
     }
 
@@ -29,7 +29,8 @@ export const placeBid = async (req: AuthRequest, res: Response) => {
     if (isNaN(bidAmount) || bidAmount <= 0) {
       return res.status(400).json({
         success: false,
-        error: "Bid amount must be a positive number",
+        error:
+          "Valuation Error: Bid amount must be a positive numerical figure.",
       });
     }
 
@@ -39,7 +40,8 @@ export const placeBid = async (req: AuthRequest, res: Response) => {
     if (!artwork) {
       return res.status(404).json({
         success: false,
-        error: "Artwork not found",
+        error:
+          "Asset Protocol Error: The specified masterpiece was not found in the Vault.",
       });
     }
 
@@ -47,7 +49,8 @@ export const placeBid = async (req: AuthRequest, res: Response) => {
     if (artwork.status !== "verified" || artwork.salePath !== "auction") {
       return res.status(400).json({
         success: false,
-        error: "This artwork is not available for auction",
+        error:
+          "Acquisition Error: This masterpiece is not currently open for auction.",
       });
     }
 
@@ -59,7 +62,7 @@ export const placeBid = async (req: AuthRequest, res: Response) => {
     if (bidAmount <= minimumBid) {
       return res.status(400).json({
         success: false,
-        error: `Bid must be higher than ₹${minimumBid.toLocaleString()}`,
+        error: `Acquisition Error: Minimum acceptable bid is ₹${minimumBid.toLocaleString("en-IN")}.`,
       });
     }
 
@@ -70,14 +73,14 @@ export const placeBid = async (req: AuthRequest, res: Response) => {
       amount: bidAmount,
     });
 
-    // Update artwork with new bid - Use findByIdAndUpdate to skip validation
+    // Update artwork with new bid
     await Artwork.findByIdAndUpdate(
       artworkId,
       { openingBid: bidAmount },
-      { runValidators: false }, // Skip validation since we're only updating openingBid
+      { runValidators: false },
     );
 
-    // Emit socket event to all clients in the auction room
+    // Emit socket event to all users in the auction room
     io.to(artworkId).emit("bid-updated", {
       artworkId,
       amount: bidAmount,
@@ -86,7 +89,7 @@ export const placeBid = async (req: AuthRequest, res: Response) => {
 
     return res.status(201).json({
       success: true,
-      message: "Bid placed successfully",
+      message: "Bid successfully recorded in the Artora Protocol.",
       bid: {
         _id: newBid._id,
         amount: newBid.amount,
@@ -94,10 +97,9 @@ export const placeBid = async (req: AuthRequest, res: Response) => {
       },
     });
   } catch (error) {
-    console.error("Error placing bid:", error);
     return res.status(500).json({
       success: false,
-      error: "Failed to place bid. Please try again later.",
+      error: "Internal Vault Protocol failure: The bid could not be secured.",
     });
   }
 };

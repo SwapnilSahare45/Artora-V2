@@ -17,4 +17,7 @@ const bidSchema = new Schema(
   { timestamps: true },
 );
 
+bidSchema.index({ artwork: 1 });
+bidSchema.index({ bidder: 1 });
+
 export const Bid = model("Bid", bidSchema);
