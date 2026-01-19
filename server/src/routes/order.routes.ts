@@ -1,10 +1,14 @@
 import { Router } from "express";
-import { createOrder, getArtistOrder, getBuyerOrders } from "../controllers/order.controller";
+import {
+  getArtistOrder,
+  getBuyerOrders,
+  placeOrder,
+} from "../controllers/order.controller";
 import { protect } from "../middleware/auth";
 
 const router = Router();
 
-router.post("/", protect, createOrder);
+router.post("/", protect, placeOrder);
 router.get("/buyer", protect, getBuyerOrders);
 router.get("/artist", protect, getArtistOrder);
 
