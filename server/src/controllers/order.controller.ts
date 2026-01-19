@@ -74,7 +74,7 @@ export const getArtistOrder = async (req: AuthRequest, res: Response) => {
   }
 };
 
-export const createOrder = async (req: AuthRequest, res: Response) => {
+export const placeOrder = async (req: AuthRequest, res: Response) => {
   try {
     if (!req.user?.userId) {
       return res.status(401).json({
@@ -112,52 +112,57 @@ export const createOrder = async (req: AuthRequest, res: Response) => {
       });
     }
 
-    // Check if artwork is verified
-    if (artwork.status !== "verified") {
-      return res.status(400).json({
-        success: false,
-        error:
-          "Acquisition Protocol Error: This masterpiece is not yet available for acquisition.",
-      });
-    }
-
-    // Determine final amount based on sale type
-    const amount =
-      artwork.salePath === "auction"
-        ? artwork.openingBid || 0
-        : artwork.price || 0;
-
-    // Validate amount
-    if (amount <= 0) {
-      return res.status(400).json({
-        success: false,
-        error:
-          "Valuation Protocol Error: Invalid masterpiece pricing detected.",
-      });
-    }
-
-    // Create order
-    const order = await Order.create({
-      buyer: req.user.userId,
-      artist: artwork.artist,
+    let order = await Order.findOne({
       artwork: artworkId,
-      saleType: artwork.salePath,
-      amount,
-      shipping: {
-        name,
-        phone,
-        address,
-        city,
-        postal,
-      },
-      paymentMethod: "cod",
-      paymentStatus: "pending",
-      orderStatus: "created",
+      buyer: req.user.userId,
+      orderStatus: "awaiting_details",
     });
 
+    if (order) {
+      order.shipping = { name, phone, address, city, postal };
+      order.paymentMethod = "cod";
+      order.orderStatus = "created";
+      order.paymentStatus = "pending";
+
+      await order.save();
+    } else {
+      // Check if artwork is verified
+      if (artwork.status !== "verified") {
+        return res.status(400).json({
+          success: false,
+          error:
+            "Acquisition Protocol Error: This masterpiece is not yet available for acquisition.",
+        });
+      }
+
+      const amount = artwork.price || 0;
+      if (amount <= 0) {
+        return res.status(400).json({
+          success: false,
+          error:
+            "Valuation Protocol Error: Invalid masterpiece pricing detected.",
+        });
+      }
+
+      order = await Order.create({
+        buyer: req.user.userId,
+        artist: artwork.artist,
+        artwork: artworkId,
+        saleType: "direct",
+        amount,
+        shipping: { name, phone, address, city, postal },
+        paymentMethod: "cod",
+        paymentStatus: "pending",
+        orderStatus: "created",
+      });
+    }
+
     // Mark artwork as sold
-    artwork.status = "sold";
-    await artwork.save();
+    await Artwork.findByIdAndUpdate(
+      artworkId,
+      { status: "sold" },
+      { runValidators: false },
+    );
 
     return res.status(201).json({
       success: true,

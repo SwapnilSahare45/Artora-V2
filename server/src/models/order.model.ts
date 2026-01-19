@@ -37,16 +37,43 @@ const orderSchema: Schema<IOrderDocument> = new Schema(
       required: true,
     },
     shipping: {
-      name: { type: String, required: true },
-      phone: { type: String, required: true },
-      address: { type: String, required: true },
-      city: { type: String, required: true },
-      postal: { type: String, required: true },
+      name: {
+        type: String,
+        required: function () {
+          return this.orderStatus !== "awaiting_details";
+        },
+      },
+      phone: {
+        type: String,
+        required: function () {
+          return this.orderStatus !== "awaiting_details";
+        },
+      },
+      address: {
+        type: String,
+        required: function () {
+          return this.orderStatus !== "awaiting_details";
+        },
+      },
+      city: {
+        type: String,
+        required: function () {
+          return this.orderStatus !== "awaiting_details";
+        },
+      },
+      postal: {
+        type: String,
+        required: function () {
+          return this.orderStatus !== "awaiting_details";
+        },
+      },
     },
     paymentMethod: {
       type: String,
       enum: ["cod", "upi", "card", "wallet"],
-      required: true,
+      required: function (this: IOrderDocument): boolean {
+        return this.orderStatus !== "awaiting_details";
+      },
     },
     paymentStatus: {
       type: String,
@@ -55,11 +82,18 @@ const orderSchema: Schema<IOrderDocument> = new Schema(
     },
     orderStatus: {
       type: String,
-      enum: ["created", "confirmed", "shipped", "delivered", "cancelled"],
-      default: "created",
+      enum: [
+        "awaiting_details",
+        "created",
+        "confirmed",
+        "shipped",
+        "delivered",
+        "cancelled",
+      ],
+      default: "awaiting_details",
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 orderSchema.index({ buyer: 1 });
