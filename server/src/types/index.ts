@@ -61,6 +61,12 @@ export interface AuthRequest extends Request {
     userId: string;
     role: string;
   };
+  body: any;
+  params: any;
+  query: any;
+  cookies: any;
+  file?: any;
+  files?: any;
 }
 
 // ==================== Artwork Type =========================

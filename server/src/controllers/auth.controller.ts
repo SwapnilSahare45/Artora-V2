@@ -112,7 +112,7 @@ export const verifyOTP = async (req: Request, res: Response) => {
     const user = await User.findOneAndUpdate(
       { email, verified: false },
       { $set: { verified: true } },
-      { new: true }
+      { new: true },
     );
 
     if (!user) {
@@ -182,7 +182,7 @@ export const resendOTP = async (req: Request, res: Response) => {
 
       if (timeSinceLastOTP < COOLDOWN_SECONDS * 1000) {
         const remainingTime = Math.ceil(
-          (COOLDOWN_SECONDS * 1000 - timeSinceLastOTP) / 1000
+          (COOLDOWN_SECONDS * 1000 - timeSinceLastOTP) / 1000,
         );
         return res.status(429).json({
           success: false,
@@ -245,7 +245,7 @@ export const login = async (req: Request, res: Response) => {
     res.cookie("token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
+      sameSite: "none",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
@@ -273,7 +273,7 @@ export const logout = async (req: Request, res: Response) => {
     res.clearCookie("token", {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
+      sameSite: "none",
       path: "/",
     });
 
