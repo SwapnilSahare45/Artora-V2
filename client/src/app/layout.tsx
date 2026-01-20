@@ -32,7 +32,7 @@ export default function RootLayout({
       lang="en"
       className={`${inter.variable} ${cormorant.variable} ${jakarta.variable}`}
     >
-      <body className="bg-bg-primary text-white antialiased selection:bg-brand selection:text-white">
+      <body className="bg-primary text-white antialiased selection:brand selection:text-white">
         <ReduxProvider>{children}</ReduxProvider>
 
         <Toaster

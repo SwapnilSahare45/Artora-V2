@@ -19,12 +19,15 @@ const LoginForm = () => {
   const onFormSubmit = async (data: any) => {
     const loginPromise = async () => {
       // API call
-      const response = await fetch("http://localhost:4500/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-        credentials: "include", // Allow cookies handling
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/auth/login`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+          credentials: "include", // Allow cookies handling
+        },
+      );
 
       const result = await response.json();
 
