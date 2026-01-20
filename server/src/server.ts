@@ -39,6 +39,13 @@ app.use(
 app.use(cookieParser());
 app.use(express.json());
 
+app.use((req, res, next) => {
+  console.log("Request Origin:", req.headers.origin);
+  console.log("CLIENT_URL env:", process.env.CLIENT_URL);
+  console.log("Request Headers:", req.headers);
+  next();
+});
+
 // Socket io middleware
 io.use((socket, next) => {
   const cookie = socket.request.headers.cookie;
