@@ -66,6 +66,10 @@ const artworkSchema: Schema<IArtworkDocument> = new Schema(
     reservePrice: {
       type: Number,
     },
+    highestBidder: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+    },
     status: {
       type: String,
       enum: ["pending", "verified", "sold", "rejected"],

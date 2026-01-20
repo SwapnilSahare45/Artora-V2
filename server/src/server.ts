@@ -13,6 +13,7 @@ import adminRoutes from "./routes/admin.routes";
 import auctionRoutes from "./routes/auction.routes";
 import orderRoutes from "./routes/order.routes";
 import { initAuctionStartWorker } from "./workers/auctionLive.worker";
+import { initAuctionEndWorker } from "./workers/auctionEnd.worker";
 
 const app: Application = express();
 const server = http.createServer(app);
@@ -93,6 +94,7 @@ const startServer = async () => {
   try {
     await connectDB();
     initAuctionStartWorker();
+    initAuctionEndWorker();
 
     const PORT = process.env.PORT || 4500;
     server.listen(PORT, () => {

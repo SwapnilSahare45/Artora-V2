@@ -118,6 +118,7 @@ export interface IArtwork {
   price?: number; // If salePath === "direct"
   openingBid?: number; // If salePath === "auction"
   reservePrice?: number; // If salePath === "auction"
+  highestBidder?: mongoose.Types.ObjectId;
   status: "pending" | "verified" | "sold" | "rejected";
   isFeatured: boolean;
   createdAt: Date;

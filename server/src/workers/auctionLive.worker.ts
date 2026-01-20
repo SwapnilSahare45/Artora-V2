@@ -2,6 +2,7 @@ import cron from "node-cron";
 import { Auction } from "../models/auction.model";
 
 export const initAuctionStartWorker = () => {
+  // Runs every minute
   cron.schedule("* * * * *", async () => {
     try {
       const now = new Date();

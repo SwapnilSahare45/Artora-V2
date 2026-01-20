@@ -16,7 +16,7 @@ export const placeBid = async (req: AuthRequest, res: Response) => {
     const { artworkId, amount } = req.body;
 
     // Validate input
-    if (!artworkId || !amount) {
+    if (!artworkId || amount === undefined) {
       return res.status(400).json({
         success: false,
         error:
@@ -54,6 +54,18 @@ export const placeBid = async (req: AuthRequest, res: Response) => {
       });
     }
 
+    // Highest bidder restriction
+    if (
+      artwork.highestBidder &&
+      artwork.highestBidder.toString() === req.user.userId
+    ) {
+      return res.status(400).json({
+        success: false,
+        error:
+          "Bid Restriction: You are already the highest bidder for this artwork.",
+      });
+    }
+
     // Validate bid amount is higher than current bid
     const currentBid = artwork.openingBid || 0;
     const minimumBid =
@@ -76,7 +88,7 @@ export const placeBid = async (req: AuthRequest, res: Response) => {
     // Update artwork with new bid
     await Artwork.findByIdAndUpdate(
       artworkId,
-      { openingBid: bidAmount },
+      { openingBid: bidAmount, highestBidder: req.user.userId },
       { runValidators: false },
     );
 
