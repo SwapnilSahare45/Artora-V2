@@ -6,14 +6,11 @@ const VisualNavigation = () => {
     { name: "Painting", image: "/abstract.webp" },
     { name: "Digital Art", image: "/digitalart.webp" },
     { name: "Photography", image: "/photography.webp" },
-    { name: "Mixed Media", image: "/traditional.webp" },
+    { name: "Landscape", image: "/traditional.webp" },
   ];
 
   return (
-    <section
-      className="max-w-7xl mx-auto py-24 px-6"
-      aria-labelledby="exhibition-heading"
-    >
+    <section className="max-w-7xl mx-auto md:py-24 px-6">
       <div className="flex justify-between items-end mb-12 border-b border-glass pb-8">
         <h2 id="exhibition-heading" className="text-4xl font-luxury">
           Browse by <span className="italic text-brand">Exhibition</span>
@@ -22,17 +19,12 @@ const VisualNavigation = () => {
           Four distinct realms
         </p>
       </div>
-      <div
-        className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4"
-        role="list"
-      >
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
         {categories.map((nav, idx) => (
           <Link
             href={`/artworks?category=${nav.name}`}
             key={idx}
-            role="listitem"
             className="group relative h-100 overflow-hidden border border-glass"
-            aria-label={`Explore the ${nav.name} exhibition`}
           >
             <Image
               src={nav.image}

@@ -7,7 +7,7 @@ import mongoose from "mongoose";
 // Get all unverified pending artworks
 export const getUnverifiedArtworks = async (
   req: AuthRequest,
-  res: Response
+  res: Response,
 ) => {
   try {
     if (req.user?.role !== "admin") {
@@ -53,7 +53,7 @@ export const verifyArtwork = async (req: AuthRequest, res: Response) => {
     const artwork = await Artwork.findByIdAndUpdate(
       req.params.id,
       { status: "verified" },
-      { new: true }
+      { new: true },
     );
 
     if (!artwork) {
@@ -94,7 +94,7 @@ export const rejectArtwork = async (req: AuthRequest, res: Response) => {
     const artwork = await Artwork.findByIdAndUpdate(
       req.params.id,
       { status: "rejected" },
-      { new: true }
+      { new: true },
     );
 
     if (!artwork) {
@@ -121,7 +121,7 @@ export const rejectArtwork = async (req: AuthRequest, res: Response) => {
 // Get verified artworks eligible for auction
 export const getArtworksForAuction = async (
   req: AuthRequest,
-  res: Response
+  res: Response,
 ) => {
   try {
     if (req.user?.role !== "admin") {
@@ -135,6 +135,7 @@ export const getArtworksForAuction = async (
     const artworks = await Artwork.find({
       salePath: "auction",
       status: "verified",
+      auctionId: { $exists: false },
     })
       .populate("artist", "firstName lastName")
       .sort({ createdAt: -1 });
@@ -209,7 +210,7 @@ export const createAuction = async (req: AuthRequest, res: Response) => {
       title,
       description,
       artworkIds: artworkIds.map(
-        (id: string) => new mongoose.Types.ObjectId(id)
+        (id: string) => new mongoose.Types.ObjectId(id),
       ),
       startDate,
       endDate,
@@ -220,7 +221,7 @@ export const createAuction = async (req: AuthRequest, res: Response) => {
     // Link artworks to the created auction
     await Artwork.updateMany(
       { _id: { $in: artworkIds } },
-      { $set: { auctionId: auction._id } }
+      { $set: { auctionId: auction._id } },
     );
 
     return res.status(201).json({
@@ -260,7 +261,7 @@ export const getScheduledAuctions = async (req: AuthRequest, res: Response) => {
     const formattedAuctions = auctions.map((auction: any) => {
       const totalValuation = auction.artworkIds.reduce(
         (acc: number, art: any) => acc + (art.openingBid || 0),
-        0
+        0,
       );
 
       return {

@@ -150,7 +150,7 @@ const DepositArtworkPage = () => {
             method: "POST",
             body: formData,
             credentials: "include",
-          }
+          },
         );
 
         const result = await response.json();
@@ -197,10 +197,7 @@ const DepositArtworkPage = () => {
           </h1>
         </header>
 
-        <nav
-          aria-label="Progress Stepper"
-          className="flex items-center justify-center"
-        >
+        <nav className="flex items-center justify-center">
           <ol className="flex items-center w-full max-w-xl">
             {steps.map((step, index) => {
               const isActive = step.id === currentStep;
@@ -220,8 +217,8 @@ const DepositArtworkPage = () => {
                         isCompleted
                           ? "bg-brand border-brand text-white"
                           : isActive
-                          ? "border-brand text-brand shadow-neon"
-                          : "border-white/20 text-white/30"
+                            ? "border-brand text-brand shadow-neon"
+                            : "border-white/20 text-white/30"
                       }`}
                     >
                       {isCompleted ? <LuCheck size={14} /> : `0${step.id}`}
@@ -534,7 +531,7 @@ const DepositArtworkPage = () => {
                 type={currentStep === steps.length ? "submit" : "button"}
                 onClick={currentStep === steps.length ? undefined : handleNext}
                 disabled={isSubmitting}
-                className="h-14 px-10 shadow-neon"
+                className="md:h-14 md:px-10 shadow-neon"
               />
             </footer>
           </form>

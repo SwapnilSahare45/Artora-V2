@@ -9,7 +9,7 @@ import Pagination from "@/components/molecules/Pagination";
 export const metadata: Metadata = {
   title: "The Collection | Artora Protocol",
   description:
-    "Browse the permanent collection of elite independent artworks, filtered by movement, medium, and style.",
+    "Browse the permanent collection of elite independent artworks, filtered by category, medium, and price.",
 };
 
 // URL search parameters supported by this page
@@ -183,7 +183,7 @@ const Artworks = async ({ searchParams }: ArtworksPageProps) => {
       <section className="pt-12 pb-12 px-6 border-b border-glass">
         <div className="max-w-7xl mx-auto space-y-4">
           <header className="flex items-center gap-3">
-            <span className="w-8 h-px bg-brand" aria-hidden="true" />
+            <span className="w-8 h-px bg-brand" />
             <p className="font-jakarta text-brand text-[10px] font-bold uppercase tracking-[0.4em]">
               Permanent Collection
             </p>
@@ -196,18 +196,12 @@ const Artworks = async ({ searchParams }: ArtworksPageProps) => {
 
       {/* Filters section */}
       <section className="border-b border-glass px-6">
-        <div className="max-w-7xl mx-auto py-6 flex flex-col md:flex-row justify-between items-center gap-8">
+        <div className="max-w-7xl mx-auto py-6 flex flex-col md:flex-row justify-between lg:items-center gap-8">
           <Search />
 
-          <nav
-            className="flex items-center gap-8 w-full md:w-auto justify-between md:justify-end"
-            aria-label="Collection Filters"
-          >
+          <nav className="flex flex-wrap items-center gap-8 w-full md:w-auto lg:justify-between justify-end">
             <Filter />
-            <div
-              className="h-4 w-px bg-glass hidden lg:block"
-              aria-hidden="true"
-            />
+            <div className="h-4 w-px bg-glass hidden lg:block" />
             <LayoutToggle />
           </nav>
         </div>

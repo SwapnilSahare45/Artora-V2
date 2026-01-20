@@ -43,10 +43,7 @@ const Button = ({
     >
       {/* Icon Left */}
       {icon && iconPosition === "left" && (
-        <span
-          className="text-base transition-transform duration-500 group-hover:-translate-x-1"
-          aria-hidden="true"
-        >
+        <span className="text-base transition-transform duration-500 group-hover:-translate-x-1">
           {icon}
         </span>
       )}
@@ -56,19 +53,13 @@ const Button = ({
 
       {/* Icon Right */}
       {icon && iconPosition === "right" && (
-        <span
-          className="text-base transition-transform duration-500 group-hover:translate-x-1"
-          aria-hidden="true"
-        >
+        <span className="text-base transition-transform duration-500 group-hover:translate-x-1">
           {icon}
         </span>
       )}
 
       {/* Bottom border animation */}
-      <span
-        className="absolute bottom-0 left-0 w-0 h-px bg-current transition-all duration-500 group-hover:w-full"
-        aria-hidden="true"
-      />
+      <span className="absolute bottom-0 left-0 w-0 h-px bg-current transition-all duration-500 group-hover:w-full" />
     </button>
   );
 };

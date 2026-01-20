@@ -1,26 +1,32 @@
 // ==================== Artwork Type =========================
 export const ART_CATEGORIES = [
   "Painting",
-  "Sculpture",
+  "Drawing",
   "Photography",
   "Digital Art",
-  "Printmaking",
-  "Mixed Media",
-  "Installation",
-  "Textile",
+  "Illustration",
+  "Sketch",
+  "Abstract",
+  "Portrait",
+  "Landscape",
 ];
 
 export const ART_MEDIUMS = [
   "Oil",
   "Acrylic",
   "Watercolor",
-  "Marble",
-  "Bronze",
-  "Digital Paint",
-  "Photography",
+  "Gouache",
+  "Pencil",
+  "Charcoal",
   "Ink",
+  "Pastel",
+  "Markers",
+  "Digital Paint",
+  "Vector",
+  "3D Render",
+  "Photo Manipulation",
+  "Photography",
   "Mixed Media",
-  "Giclee",
 ];
 
 export type ArtCategory = (typeof ART_CATEGORIES)[number];

@@ -40,7 +40,6 @@ const StudioCard = ({
         <div className="absolute top-4 left-4 flex items-center gap-2 px-3 py-1.5 bg-black/60 backdrop-blur-md border border-glass">
           <span
             className={`w-1.5 h-1.5 rounded-full ${statusColors[status]}`}
-            aria-hidden="true"
           />
           <span className="font-jakarta text-[8px] font-bold uppercase tracking-widest">
             {status}

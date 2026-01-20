@@ -39,10 +39,7 @@ const AuctionCard = ({ auction, children }: AuctionCardProps) => {
         )}
 
         {/* Timer Container */}
-        <div
-          className="flex items-center gap-6 px-8 h-16 border border-white/10 bg-surface backdrop-blur-sm"
-          aria-label="Auction ends in"
-        >
+        <div className="flex items-center gap-6 px-8 h-16 border border-white/10 bg-surface backdrop-blur-sm">
           <p className="font-jakarta text-[9px] uppercase tracking-[0.3em] text-dim whitespace-nowrap">
             Ends In
           </p>

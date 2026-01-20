@@ -107,7 +107,7 @@ const ArtworkPage = async ({ params }: ArtworkPageProps) => {
               <span className="font-jakarta text-[9px] font-bold uppercase tracking-[0.4em] text-brand">
                 {artwork.category}
               </span>
-              <span className="h-px w-8 bg-glass" aria-hidden="true" />
+              <span className="h-px w-8 bg-glass" />
             </div>
             <h1 className="text-5xl md:text-7xl font-luxury leading-tight">
               {artwork.title.split(" ").slice(0, -1).join(" ")}

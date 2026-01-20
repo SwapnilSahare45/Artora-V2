@@ -193,10 +193,10 @@ const RegisterForm = () => {
                       isResendOTPPending
                         ? "Sending..."
                         : completed
-                        ? "Resend Code"
-                        : `Resend in ${minutes}:${seconds
-                            .toString()
-                            .padStart(2, "0")}`
+                          ? "Resend Code"
+                          : `Resend in ${minutes}:${seconds
+                              .toString()
+                              .padStart(2, "0")}`
                     }
                     variant="ghost"
                     disabled={!completed || isResendOTPPending}
@@ -378,7 +378,7 @@ const RegisterForm = () => {
           </form>
 
           {/* Separator */}
-          <div className="relative flex items-center py-10" aria-hidden="true">
+          <div className="relative flex items-center">
             <div className="grow border-t border-glass"></div>
             <span className="shrink mx-6 text-[10px] font-jakarta font-bold uppercase tracking-[0.3em] text-dim">
               Fast Track

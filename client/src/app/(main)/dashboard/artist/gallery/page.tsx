@@ -22,7 +22,7 @@ async function getArtistArtworks() {
         Cookie: cookieStore.toString(),
       },
       cache: "no-store", // Alwasy fetch fresh data
-    }
+    },
   );
 
   // If API fails, return empty list
@@ -74,18 +74,18 @@ function StatsSection({ artworks }: { artworks: any[] }) {
 
   // Count verified artworks
   const verifiedCount = artworks.filter(
-    (a: any) => a.status === "verified"
+    (a: any) => a.status === "verified",
   ).length;
 
   // Count pending artworks
   const pendingCount = artworks.filter(
-    (a: any) => a.status === "pending"
+    (a: any) => a.status === "pending",
   ).length;
 
   // Total valuation (only direct sale price)
   const totalValuation = artworks.reduce(
     (acc: number, a: any) => acc + (Number(a.price) || 0),
-    0
+    0,
   );
 
   return (
@@ -179,11 +179,11 @@ const ArtistGalleryPage = async () => {
               Inventory Management
             </p>
             <h1 className="text-6xl md:text-7xl font-luxury">
-              Studio <span className="italic text-muted">Inventory.</span>
+              Studio <span className="italic text-brand">Inventory.</span>
             </h1>
           </div>
           {/* Deposit button */}
-          <Link href="/dashboard/artist/deposit">
+          <Link href="/dashboard/artist/deposit" className="hidden md:block">
             <Button
               title="Deposit New Piece"
               icon={<LuPlus size={18} />}

@@ -28,14 +28,11 @@ const FeaturedArtworks = async () => {
   const artworks = await getFeaturedArtworks();
 
   return (
-    <section
-      className="max-w-7xl mx-auto py-24 px-6 flex flex-col"
-      aria-labelledby="trending-heading"
-    >
-      <header className="w-full flex flex-col md:flex-row md:items-end justify-between mb-12 gap-8 border-b border-glass pb-10">
+    <section className="max-w-7xl mx-auto md:py-24 px-6 flex flex-col">
+      <header className="w-full flex flex-row items-end justify-between mb-12 gap-8 border-b border-glass pb-10">
         <div className="space-y-4">
           <div className="flex items-center gap-3">
-            <span className="w-8 h-px bg-brand" aria-hidden="true" />
+            <span className="w-8 h-px bg-brand" />
             <p className="font-jakarta text-brand text-[10px] font-bold uppercase tracking-[0.4em]">
               Top Curation
             </p>

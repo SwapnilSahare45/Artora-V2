@@ -51,11 +51,8 @@ const AuctionsPage = async () => {
     <main className="min-h-screen">
       {/* Live Auction Hero */}
       {liveAuction && (
-        <section
-          className="max-w-7xl mx-auto pt-20 pb-20 px-6 space-y-12"
-          aria-label="Featured Live Auction"
-        >
-          <div className="flex items-center gap-4" aria-live="polite">
+        <section className="max-w-7xl mx-auto pt-20 pb-20 px-6 space-y-12">
+          <div className="flex items-center gap-4">
             <div className="relative flex h-3 w-3">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75" />
               <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500" />
@@ -81,11 +78,8 @@ const AuctionsPage = async () => {
       )}
 
       {/* Upcoming Auctions */}
-      <section
-        className="max-w-7xl mx-auto md:pb-24 px-6 space-y-16"
-        aria-labelledby="upcoming-heading"
-      >
-        <div className="flex justify-center pt-10" aria-hidden="true">
+      <section className="max-w-7xl mx-auto md:pb-24 px-6 space-y-16">
+        <div className="flex justify-center pt-10">
           <div className="w-px h-24 bg-linear-to-t from-brand to-transparent" />
         </div>
 
@@ -130,7 +124,7 @@ const AuctionsPage = async () => {
           ))}
         </ol>
 
-        <div className="flex justify-center pt-10" aria-hidden="true">
+        <div className="flex justify-center pt-10">
           <div className="w-px h-24 bg-linear-to-b from-brand to-transparent" />
         </div>
       </section>

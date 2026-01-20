@@ -92,7 +92,7 @@ const AuctionSchedulerPage = () => {
   }
 
   return (
-    <main className="min-h-screen pt-12 pb-20 px-6 md:px-10 text-white bg-[#0a0a0a]">
+    <main className="min-h-screen pt-18 lg:pt-0 pb-20 px-6 md:px-10 text-white bg-[#0a0a0a]">
       <div className="max-w-7xl mx-auto space-y-12">
         {/* Header */}
         <section className="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-6 border-b border-white/10 pb-8">
@@ -112,7 +112,7 @@ const AuctionSchedulerPage = () => {
 
         <div className="grid grid-cols-1 xl:grid-cols-12 gap-12">
           {/* Main auction list */}
-          <section className="xl:col-span-8 space-y-6">
+          <section className="order-2 md:order-1 xl:col-span-8 space-y-6">
             <div className="flex justify-between items-center border-b border-white/5 pb-4">
               <h2 className="font-luxury text-xl italic">Active Timeline</h2>
               <span className="text-[10px] text-dim uppercase tracking-widest">
@@ -157,7 +157,7 @@ const AuctionSchedulerPage = () => {
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-3 mt-4 md:mt-0">
+                    <div className="hidden md:flex items-center gap-3 mt-4 md:mt-0">
                       <button
                         className="p-3 bg-white/5 hover:bg-brand/20 hover:text-brand transition-all rounded"
                         title="Edit Auction"
@@ -182,7 +182,7 @@ const AuctionSchedulerPage = () => {
           </section>
 
           {/* Curation Pool */}
-          <aside className="xl:col-span-4 space-y-6">
+          <aside className="order-1 md:order-2 xl:col-span-4 space-y-6">
             <div className="space-y-4">
               <div className="flex justify-between items-end">
                 <h2 className="font-jakarta text-[10px] uppercase tracking-[0.3em] text-brand font-bold">

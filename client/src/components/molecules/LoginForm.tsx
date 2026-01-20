@@ -87,7 +87,7 @@ const LoginForm = () => {
       </form>
 
       {/* Separator */}
-      <div className="relative flex items-center py-10" aria-hidden="true">
+      <div className="relative flex items-center py-10">
         <div className="grow border-t border-glass"></div>
         <span className="shrink mx-6 text-[10px] font-jakarta font-bold uppercase tracking-[0.3em] text-dim">
           Fast Track

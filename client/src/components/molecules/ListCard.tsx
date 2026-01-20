@@ -39,10 +39,7 @@ const ListCard = ({ artwork }: ListCardProps) => {
           fill
           className="object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-1000 ease-out"
         />
-        <div
-          className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-500"
-          aria-hidden="true"
-        />
+        <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-500" />
 
         {/* Status Badge */}
         <div className="absolute top-4 left-4">
@@ -64,7 +61,7 @@ const ListCard = ({ artwork }: ListCardProps) => {
               <span className="font-jakarta text-[10px] text-muted tracking-widest uppercase">
                 {artwork.category}
               </span>
-              <div className="h-3 w-px bg-glass mx-2" aria-hidden="true" />
+              <div className="h-3 w-px bg-glass mx-2" />
               <span className="font-jakarta text-[10px] text-muted tracking-widest uppercase">
                 {artwork.medium}
               </span>
@@ -73,10 +70,7 @@ const ListCard = ({ artwork }: ListCardProps) => {
 
           {/* Auction Timer */}
           {isAuction && (
-            <div
-              className="bg-surface-hover border border-glass px-4 py-2"
-              aria-label="Auction time remaining"
-            >
+            <div className="bg-surface-hover border border-glass px-4 py-2">
               <div className="flex items-center gap-2 text-brand">
                 <AuctionTimer targetDate={artwork.auctionId?.endDate} />
               </div>
@@ -95,7 +89,7 @@ const ListCard = ({ artwork }: ListCardProps) => {
             </p>
             <div className="flex items-center gap-2 text-xs text-dim pt-2">
               <span>{artwork.year}</span>
-              <div className="h-4 w-px bg-glass mx-2" aria-hidden="true" />
+              <div className="h-4 w-px bg-glass mx-2" />
               <span>{artwork.dimensions}</span>
             </div>
           </div>

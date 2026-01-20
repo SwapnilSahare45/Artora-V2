@@ -92,7 +92,7 @@ const CreateAuctionPage = () => {
   };
 
   return (
-    <main className="min-h-screen pt-12 pb-20 px-6 md:px-10">
+    <main className="min-h-screen pt-18 lg:pt-0 pb-20 px-6 md:px-10">
       <LotSelectorModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}

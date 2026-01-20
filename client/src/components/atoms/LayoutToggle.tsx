@@ -16,11 +16,7 @@ const LayoutToggle = () => {
     "flex h-11 w-11 items-center justify-center transition-all duration-500 ease-out cursor-pointer focus:outline-none focus:ring-1 focus:ring-brand/50";
 
   return (
-    <div
-      className={containerStyle}
-      role="group"
-      aria-label="View mode selection"
-    >
+    <div className={containerStyle} role="group">
       <button
         type="button"
         className={`
@@ -32,13 +28,11 @@ const LayoutToggle = () => {
           }
         `}
         onClick={() => dispatch(setViewMode("grid"))}
-        aria-label="Switch to Grid View"
-        aria-pressed={viewMode === "grid"}
       >
-        <TbLayoutGridFilled size={18} aria-hidden="true" />
+        <TbLayoutGridFilled size={18} />
       </button>
 
-      <div className="w-px h-6 bg-glass mx-px" aria-hidden="true" />
+      <div className="w-px h-6 bg-glass mx-px" />
 
       <button
         type="button"
@@ -51,10 +45,8 @@ const LayoutToggle = () => {
           }
         `}
         onClick={() => dispatch(setViewMode("list"))}
-        aria-label="Switch to List View"
-        aria-pressed={viewMode === "list"}
       >
-        <LuLayoutList size={18} aria-hidden="true" />
+        <LuLayoutList size={18} />
       </button>
     </div>
   );

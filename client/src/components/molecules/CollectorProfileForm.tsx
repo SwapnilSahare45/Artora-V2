@@ -76,7 +76,7 @@ const CollectorProfileForm = ({ user }: { user: any }) => {
           method: "PATCH",
           body: formData,
           credentials: "include",
-        }
+        },
       );
 
       const result = await response.json();
@@ -105,9 +105,9 @@ const CollectorProfileForm = ({ user }: { user: any }) => {
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="grid grid-cols-1 lg:grid-cols-12 gap-20"
+      className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-20"
     >
-      <div className="lg:col-span-7 space-y-20">
+      <div className="order-2 md:order-1 lg:col-span-7 space-y-20">
         {/* Public Persona */}
         <fieldset className="space-y-12 border-none p-0">
           <legend className="font-jakarta text-[10px] uppercase tracking-[0.4em] text-brand mb-8">
@@ -192,17 +192,14 @@ const CollectorProfileForm = ({ user }: { user: any }) => {
       </div>
 
       {/* Collector Identity Card */}
-      <aside className="lg:col-span-5" aria-label="Public profile preview">
+      <aside className="order-1 md:order-2 lg:col-span-5">
         <div className="sticky top-32 space-y-8">
           <p className="font-jakarta text-[10px] uppercase tracking-[0.4em] text-dim font-bold text-center">
             Archival Preview
           </p>
 
           <article className="relative bg-[#080808] border border-glass p-10 space-y-10 overflow-hidden group shadow-2xl">
-            <div
-              className="absolute top-0 right-0 w-32 h-32 bg-brand/5 -rotate-45 translate-x-16 -translate-y-16"
-              aria-hidden="true"
-            />
+            <div className="absolute top-0 right-0 w-32 h-32 bg-brand/5 -rotate-45 translate-x-16 -translate-y-16" />
             <header className="space-y-6">
               <div className="relative w-24 h-24 rounded-full overflow-hidden border border-glass group">
                 {previewUrl || user.avatar ? (
@@ -237,11 +234,7 @@ const CollectorProfileForm = ({ user }: { user: any }) => {
                   `${user.firstName} ${user.lastName}`}
               </h2>
               <div className="flex items-center gap-2">
-                <LuShieldCheck
-                  className="text-brand"
-                  size={14}
-                  aria-hidden="true"
-                />
+                <LuShieldCheck className="text-brand" size={14} />
                 <p className="font-jakarta text-[9px] uppercase tracking-[0.4em] text-brand font-bold">
                   Verified Curator
                 </p>

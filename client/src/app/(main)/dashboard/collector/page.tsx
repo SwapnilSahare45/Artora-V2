@@ -10,7 +10,7 @@ const CollectorProfilePage = async () => {
     {
       method: "GET",
       headers: { "Content-Type": "application/json", Cookie: `token=${token}` },
-    }
+    },
   );
 
   const result = await response.json();
@@ -20,7 +20,7 @@ const CollectorProfilePage = async () => {
       <section className="mb-16 border-b border-glass pb-12">
         <header className="space-y-4">
           <div className="flex items-center gap-3">
-            <span className="w-8 h-px bg-brand" aria-hidden="true" />
+            <span className="w-8 h-px bg-brand" />
             <p className="font-jakarta text-brand text-[10px] font-bold uppercase tracking-[0.4em]">
               Acquisition Identity
             </p>

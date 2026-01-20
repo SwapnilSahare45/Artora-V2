@@ -38,10 +38,7 @@ const ArtistSpotlight = () => {
               transforms everyday moments into visceral abstract expressions.
             </p>
             <div className="relative py-4">
-              <div
-                className="absolute left-0 top-0 w-1 h-full bg-brand"
-                aria-hidden="true"
-              />
+              <div className="absolute left-0 top-0 w-1 h-full bg-brand" />
               <blockquote className="pl-10 font-luxury italic text-2xl text-white/90 leading-snug">
                 "I paint the feelings that words can't capture—the space between
                 memory and dream."

@@ -91,7 +91,7 @@ const GridCard = ({ artwork }: GridCardProps) => {
             <span className="font-jakarta text-[7px] uppercase tracking-wider text-dim">
               {artwork.category}
             </span>
-            <div className="h-3 w-px bg-glass mx-2" aria-hidden="true" />
+            <div className="h-3 w-px bg-glass mx-2" />
             <span className="font-jakarta text-[7px] uppercase tracking-wider text-dim">
               {artwork.medium}
             </span>
@@ -108,10 +108,9 @@ const GridCard = ({ artwork }: GridCardProps) => {
           </div>
           <Link
             href={`/artworks/${artwork._id}`}
-            aria-label={`View ${artwork.title} details`}
             className="h-11 w-11 border border-glass flex items-center justify-center hover:bg-brand hover:border-brand transition-all"
           >
-            <LuArrowUpRight size={18} aria-hidden="true" />
+            <LuArrowUpRight size={18} />
           </Link>
         </div>
 

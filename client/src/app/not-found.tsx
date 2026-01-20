@@ -22,10 +22,7 @@ export default function NotFound() {
       </div>
 
       {/* Glow Backdrop */}
-      <div
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-150 h-150 bg-brand/10 blur-[160px] rounded-full -z-10"
-        aria-hidden="true"
-      />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-150 h-150 bg-brand/10 blur-[160px] rounded-full -z-10" />
 
       <div className="relative z-10 flex flex-col items-center text-center space-y-12">
         {/* Branding */}
@@ -35,11 +32,11 @@ export default function NotFound() {
 
         <header className="space-y-6">
           <div className="flex items-center justify-center gap-4">
-            <span className="w-12 h-px bg-brand" aria-hidden="true" />
+            <span className="w-12 h-px bg-brand" />
             <p className="font-jakarta text-brand text-[10px] font-bold uppercase tracking-[0.5em]">
               Void Encountered
             </p>
-            <span className="w-12 h-px bg-brand" aria-hidden="true" />
+            <span className="w-12 h-px bg-brand" />
           </div>
 
           <h1 className="text-6xl md:text-8xl font-luxury leading-[0.9] tracking-tighter">

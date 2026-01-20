@@ -102,7 +102,7 @@ const ModerationQueuePage = () => {
   };
 
   return (
-    <main className="min-h-screen pt-12 pb-20 px-6 md:px-10">
+    <main className="min-h-screen pt-18 lg:pt-0 pb-20 px-6 md:px-10">
       <div className="max-w-7xl mx-auto space-y-16">
         {/* Header */}
         <section className="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-10 border-b border-glass pb-12">
@@ -134,8 +134,8 @@ const ModerationQueuePage = () => {
               className="group flex flex-col xl:flex-row justify-between p-6 bg-surface border border-glass hover:border-brand/30 transition-all gap-8"
             >
               {/* Preview */}
-              <div className="flex items-center gap-8">
-                <div className="relative w-32 h-32 border border-glass overflow-hidden">
+              <div className="flex flex-col md:flex-row md:items-center gap-8">
+                <div className="relative w-full md:w-32 h-32 border border-glass overflow-hidden">
                   <Image
                     src={art.imageURL}
                     alt={art.title}
@@ -159,7 +159,7 @@ const ModerationQueuePage = () => {
               </div>
 
               {/* Meta */}
-              <dl className="grid grid-cols-2 md:grid-cols-4 items-center gap-8 border-x border-glass px-8">
+              <dl className="grid grid-cols-2 md:grid-cols-4 items-center gap-8 lg:border-x border-glass px-8">
                 <div>
                   <dt className="text-[8px] uppercase text-dim">Medium</dt>
                   <dd className="text-[10px] uppercase">{art.medium}</dd>
@@ -189,7 +189,7 @@ const ModerationQueuePage = () => {
               </dl>
 
               {/* Actions */}
-              <div className="grid grid-cols-2 md:grid-cols-1 items-center">
+              <div className="grid grid-cols-2 md:grid-cols-1 gap-4 items-center">
                 <Button
                   title="Verify"
                   icon={<BiCheckCircle size={18} />}

@@ -74,10 +74,7 @@ const Pagination = ({
   if (totalPages <= 1) return null;
 
   return (
-    <nav
-      className="flex items-center justify-center gap-2"
-      aria-label="Pagination Navigation"
-    >
+    <nav className="flex items-center justify-center gap-2">
       {/* Previous page Button */}
       <button
         onClick={() => handlePageChange(currentPage - 1)}
@@ -87,7 +84,6 @@ const Pagination = ({
             ? "border-glass hover:border-brand text-white hover:bg-brand/5"
             : "border-glass/30 text-dim cursor-not-allowed opacity-40"
         }`}
-        aria-label="Previous Page"
       >
         <LuChevronLeft size={18} />
       </button>
@@ -118,8 +114,6 @@ const Pagination = ({
                   ? "border-brand bg-brand text-white shadow-neon"
                   : "border-glass hover:border-brand text-white hover:bg-brand/5"
               }`}
-              aria-label={`Go to page ${pageNumber}`}
-              aria-current={isActive ? "page" : undefined}
             >
               {pageNumber}
             </button>
@@ -136,7 +130,6 @@ const Pagination = ({
             ? "border-glass hover:border-brand text-white hover:bg-brand/5"
             : "border-glass/30 text-dim cursor-not-allowed opacity-40"
         }`}
-        aria-label="Next Page"
       >
         <LuChevronRight size={18} />
       </button>

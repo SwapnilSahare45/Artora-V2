@@ -74,7 +74,7 @@ const AuctionPage = async ({ params }: AuctionPageProps) => {
               <p className="font-jakarta text-[9px] uppercase tracking-[0.3em] text-dim">
                 Time Remaining
               </p>
-              <div className="font-mono text-4xl tracking-widest bg-surface-hover px-6 py-3 inline-block border border-glass">
+              <div className="font-mono text-3xl md:text-4xl tracking-widest bg-surface-hover px-6 py-3 inline-block border border-glass">
                 <AuctionTimer targetDate={new Date(auction.endDate)} />
               </div>
             </div>

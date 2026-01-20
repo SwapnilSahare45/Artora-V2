@@ -61,7 +61,7 @@ const ArtistProfileForm = ({ user }: { user: any }) => {
 
       // Append avatar file manually
       const fileInput = document.getElementById(
-        "artist-avatar"
+        "artist-avatar",
       ) as HTMLInputElement;
 
       if (fileInput?.files?.[0]) {
@@ -75,7 +75,7 @@ const ArtistProfileForm = ({ user }: { user: any }) => {
           method: "PATCH",
           body: formData,
           credentials: "include",
-        }
+        },
       );
 
       const result = await response.json();
@@ -101,9 +101,9 @@ const ArtistProfileForm = ({ user }: { user: any }) => {
   return (
     <form
       onSubmit={handleSubmit(onArtistUpdate)}
-      className="grid grid-cols-1 lg:grid-cols-12 gap-20"
+      className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-20"
     >
-      <div className="lg:col-span-7 space-y-16">
+      <div className="order-2 md:order-1 lg:col-span-7 space-y-16">
         <fieldset className="space-y-10 border-none p-0 m-0">
           <legend className="font-jakarta text-[10px] uppercase tracking-[0.4em] text-brand font-bold flex items-center gap-3 mb-8">
             Public Identity
@@ -174,7 +174,7 @@ const ArtistProfileForm = ({ user }: { user: any }) => {
         </fieldset>
       </div>
 
-      <aside className="lg:col-span-5" aria-label="Real-time profile preview">
+      <aside className="order-1 md:order-2 lg:col-span-5">
         <div className="space-y-8">
           <p className="font-jakarta text-[10px] uppercase tracking-[0.4em] text-dim font-bold text-center">
             Real-time Preview
@@ -207,7 +207,7 @@ const ArtistProfileForm = ({ user }: { user: any }) => {
                 className="flex flex-col items-center gap-3 cursor-pointer transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500"
               >
                 <div className="p-4 bg-brand rounded-full shadow-xl">
-                  <LuCamera size={20} aria-hidden="true" />
+                  <LuCamera size={20} />
                 </div>
                 <span className="font-jakarta text-[9px] uppercase tracking-widest font-bold">
                   Update Asset

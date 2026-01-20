@@ -17,8 +17,7 @@ const NavbarClient = ({ userRole }: NavbarProps) => {
 
   const guestLinks = [
     { name: "Artworks", href: "/artworks" },
-    { name: "Auctions", href: "/auctions" },
-    { name: "Artists", href: "/artists" },
+    { name: "Live Floor", href: "/auctions" },
   ];
 
   const collectorLinks = [
@@ -53,7 +52,7 @@ const NavbarClient = ({ userRole }: NavbarProps) => {
       <header className="fixed top-0 left-0 right-0 w-full z-50 backdrop-blur-xl">
         <nav className="max-w-7xl mx-auto flex items-center justify-between py-2 lg:py-8 px-6">
           <div className="flex-1">
-            <Link href="/" aria-label="Artora home">
+            <Link href="/">
               <Logo size="sm" />
             </Link>
           </div>
@@ -146,7 +145,6 @@ const NavbarClient = ({ userRole }: NavbarProps) => {
             <Logo size="sm" />
             <button
               onClick={() => setIsOpen(false)}
-              aria-label="Close mobile menu"
               className="text-dim hover:text-white"
             >
               <LuX size={28} />

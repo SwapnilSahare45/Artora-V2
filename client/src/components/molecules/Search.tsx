@@ -23,7 +23,7 @@ const Search = () => {
       <input
         value={query}
         onChange={(e) => setQuery(e.target.value)}
-        placeholder="Search artwork or artist"
+        placeholder="Search..."
         className="w-full bg-transparent border-0 border-b border-white/20 pl-10 py-4 font-jakarta text-sm text-white outline-none focus:border-brand focus:shadow-none transition-all placeholder:text-white/30 hover:border-white/40"
       />
     </div>

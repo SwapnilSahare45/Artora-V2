@@ -90,10 +90,10 @@ const CheckoutForm = ({
   return (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-16">
       {/* Shipping & COD*/}
-      <div className="lg:col-span-7 space-y-16">
+      <div className="order-1 lg:col-span-7 space-y-16">
         <header className="space-y-4">
           <div className="flex items-center gap-3">
-            <span className="w-8 h-px bg-brand" aria-hidden="true" />
+            <span className="w-8 h-px bg-brand" />
             <p className="font-jakarta text-brand text-[10px] font-bold uppercase tracking-[0.4em]">
               Final Settlement
             </p>

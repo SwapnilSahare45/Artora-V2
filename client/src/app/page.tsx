@@ -1,9 +1,7 @@
 import { Metadata } from "next";
 import { Suspense } from "react";
 import Button from "@/components/atoms/Button";
-import LayoutToggle from "@/components/atoms/LayoutToggle";
 import ArtistSpotlight from "@/components/molecules/ArtistsSpotlight";
-import ArtworkLayoutMode from "@/components/molecules/ArtworkLayoutMode";
 import Footer from "@/components/molecules/Footer";
 import Image from "next/image";
 import Link from "next/link";
@@ -72,7 +70,7 @@ export default async function Home() {
       <main>
         {/* Hero section */}
         <section
-          className="relative max-w-7xl mx-auto pt-32 pb-20 px-6 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center"
+          className="relative max-w-7xl mx-auto pt-32 pb-20 px-6 grid grid-cols-1 md:grid-cols-2 gap-16 items-center"
           aria-label="Welcome to Artora"
         >
           <div className="space-y-8 text-left z-10">
@@ -122,10 +120,7 @@ export default async function Home() {
             </div>
           </div>
 
-          <div
-            className="relative h-150 flex items-center justify-center lg:mt-0 mt-12"
-            aria-hidden="true"
-          >
+          <div className="hidden relative h-150 md:flex items-center justify-center">
             <div className="absolute top-10 right-0 w-72 h-112.5 z-20 border border-glass shadow-2xl overflow-hidden">
               <Image
                 src="/hero-1.webp"
@@ -175,10 +170,7 @@ export default async function Home() {
         <section className="max-w-7xl mx-auto py-40 px-6 grid grid-cols-1 md:grid-cols-3 gap-16 border-t border-glass">
           {activeSteps.map((item, idx) => (
             <div key={idx} className="space-y-8 group">
-              <span
-                className="text-7xl font-luxury text-white/10 group-hover:text-brand transition-all duration-700 block italic"
-                aria-hidden="true"
-              >
+              <span className="text-7xl font-luxury text-white/10 group-hover:text-brand transition-all duration-700 block italic">
                 {item.step}
               </span>
               <div className="space-y-4">
@@ -194,14 +186,8 @@ export default async function Home() {
         </section>
 
         {/* CTA */}
-        <section
-          className="relative h-125 flex flex-col items-center justify-center text-center overflow-hidden border-t border-glass"
-          aria-label="Join Artora"
-        >
-          <div
-            className="absolute inset-0 bg-brand/5 -z-10"
-            aria-hidden="true"
-          />
+        <section className="relative h-125 flex flex-col items-center justify-center text-center overflow-hidden border-t border-glass">
+          <div className="absolute inset-0 bg-brand/5 -z-10" />
           <div className="space-y-10 px-6 relative z-10 flex flex-col items-center">
             <h2 className="text-5xl md:text-7xl font-luxury leading-tight">
               {userRole ? (

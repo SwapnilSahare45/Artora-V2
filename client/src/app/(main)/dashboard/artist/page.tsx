@@ -12,7 +12,7 @@ const Artist = async () => {
     {
       method: "GET",
       headers: { "Content-Type": "application/json", Cookie: `token=${token}` },
-    }
+    },
   );
 
   const result = await response.json();
@@ -23,7 +23,7 @@ const Artist = async () => {
       <section className="flex flex-col md:flex-row justify-between items-end gap-8 mb-16 border-b border-glass pb-12">
         <div className="space-y-4">
           <div className="flex items-center gap-3">
-            <span className="w-8 h-px bg-brand" aria-hidden="true" />
+            <span className="w-8 h-px bg-brand" />
             <p className="font-jakarta text-brand text-[10px] font-bold uppercase tracking-[0.4em]">
               Identity Configuration
             </p>
@@ -33,13 +33,8 @@ const Artist = async () => {
           </h1>
         </div>
 
-        <Link href={"/dashboard/artist/gallery"}>
-          <Button
-            title="My Gallery"
-            ariaLabel="View my public gallery"
-            variant="outline"
-            className="h-14"
-          />
+        <Link href={"/dashboard/artist/sales"}>
+          <Button title="My sales" variant="outline" className="h-14" />
         </Link>
       </section>
 

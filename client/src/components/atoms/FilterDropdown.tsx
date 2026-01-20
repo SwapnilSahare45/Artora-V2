@@ -58,9 +58,6 @@ const FilterDropdown = ({ label, options, paramName }: FilterProps) => {
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        aria-expanded={isOpen}
-        aria-haspopup="listbox"
-        aria-labelledby={`${paramName}-label`}
         title={`Filter by ${label}`}
         className="flex items-center gap-3 py-2 border-b border-glass hover:border-brand transition-all group focus:outline-none focus:border-brand"
       >
@@ -76,7 +73,6 @@ const FilterDropdown = ({ label, options, paramName }: FilterProps) => {
         </span>
         <LuChevronDown
           size={12}
-          aria-hidden="true"
           className={`text-brand transition-transform duration-500 ${
             isOpen ? "rotate-180" : ""
           }`}
@@ -87,14 +83,12 @@ const FilterDropdown = ({ label, options, paramName }: FilterProps) => {
       {isOpen && (
         <div
           role="listbox"
-          aria-labelledby={`${paramName}-label`}
           className="absolute top-full left-0 mt-2 w-56 bg-[#0a0a0a] border border-glass shadow-[0_20px_50px_rgba(0,0,0,0.8)] z-50"
         >
           <div className="py-2 max-h-60 overflow-y-auto custom-scrollbar">
             {/* Reset/All option */}
             <button
               role="option"
-              aria-selected={!selected}
               onClick={() => handleSelect("")}
               className="w-full text-left px-6 py-3 text-[9px] uppercase tracking-widest text-brand hover:bg-surface transition-all italic font-bold flex items-center justify-between"
             >
@@ -110,7 +104,6 @@ const FilterDropdown = ({ label, options, paramName }: FilterProps) => {
                 <button
                   key={option.value}
                   role="option"
-                  aria-selected={isActive}
                   onClick={() => handleSelect(option.value)}
                   className={`w-full text-left px-6 py-3 text-[10px] uppercase tracking-widest transition-all flex items-center justify-between ${
                     isActive

@@ -39,19 +39,14 @@ const AuctionTimer = ({ targetDate }: { targetDate: Date }) => {
     const isFomo = days === 0 && hours === 0 && minutes < 10;
 
     return (
-      <div
-        className="flex items-center gap-4 font-jakarta"
-        role="timer"
-        aria-label={`Time remaining: ${days} days, ${hours} hours, ${minutes} minutes, and ${seconds} seconds`}
-        aria-live={isFomo ? "assertive" : "polite"}
-      >
+      <div className="flex items-center gap-4 font-jakarta" role="timer">
         <div
           className={`flex items-baseline gap-2 transition-colors duration-1000 ${
             isFomo ? "text-muted" : "text-white"
           }`}
         >
           {days > 0 && (
-            <span className="flex items-baseline" aria-hidden="true">
+            <span className="flex items-baseline">
               {days}
               <span className="text-[10px] text-text-dim ml-0.5 lowercase font-light">
                 d
@@ -59,14 +54,14 @@ const AuctionTimer = ({ targetDate }: { targetDate: Date }) => {
             </span>
           )}
 
-          <span className="flex items-baseline" aria-hidden="true">
+          <span className="flex items-baseline">
             {zeroPad(hours)}
             <span className="text-[10px] text-text-dim ml-0.5 lowercase font-light">
               h
             </span>
           </span>
 
-          <span className="flex items-baseline" aria-hidden="true">
+          <span className="flex items-baseline">
             {zeroPad(minutes)}
             <span className="text-[10px] text-text-dim ml-0.5 lowercase font-light">
               m
@@ -76,7 +71,6 @@ const AuctionTimer = ({ targetDate }: { targetDate: Date }) => {
           {(days === 0 || isFomo) && (
             <span
               className={`flex items-baseline ${isFomo ? "animate-pulse" : ""}`}
-              aria-hidden="true"
             >
               {zeroPad(seconds)}
               <span className="text-[10px] text-text-dim ml-0.5 lowercase font-light">

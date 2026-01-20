@@ -9,6 +9,8 @@ import { bufferToDataUrl } from "../utils/bufferToDataUrl";
 import cloudinary from "../utils/cloudinary";
 import { Artwork } from "../models/artwork.model";
 import { Auction } from "../models/auction.model";
+import { Readable } from "stream";
+import sharp from "sharp";
 
 export const getFeaturedArtworks = async (req: Request, res: Response) => {
   try {
@@ -203,6 +205,7 @@ export const depositArtwork = async (req: AuthRequest, res: Response) => {
         error: "Vault Access Denied: Authentication credentials missing.",
       });
     }
+
     const {
       title,
       category,
@@ -231,15 +234,15 @@ export const depositArtwork = async (req: AuthRequest, res: Response) => {
       });
     }
 
-    // Check if image file exists
-    if (!req.file) {
+    const file = req.file;
+
+    if (!file) {
       return res.status(400).json({
         success: false,
         error: "Master digital asset missing from transmission.",
       });
     }
 
-    // Validate price for direct sale
     if (salePath === "direct" && (!price || Number(price) <= 0)) {
       return res.status(400).json({
         success: false,
@@ -248,7 +251,6 @@ export const depositArtwork = async (req: AuthRequest, res: Response) => {
       });
     }
 
-    // Validate auction values
     if (salePath === "auction") {
       if (!openingBid || Number(openingBid) <= 0) {
         return res.status(400).json({
@@ -267,17 +269,42 @@ export const depositArtwork = async (req: AuthRequest, res: Response) => {
     }
 
     let uploadResponse;
-    // Upload image to cloudinary
+
     try {
-      const fileDataUrl = bufferToDataUrl(req.file);
-      uploadResponse = await cloudinary.uploader.upload(fileDataUrl, {
-        folder: "artora/artworks",
-        public_id: `art-${req.user?.userId}-${Date.now()}`,
-        overwrite: false,
-        resource_type: "auto",
-        transformation: [{ quality: "auto:good" }, { fetch_format: "auto" }],
+      // Compress image using Sharp
+      const compressedBuffer = await sharp(file.buffer)
+        .resize(1920, 1920, {
+          fit: "inside", // Keep aspect ratio, don't crop
+          withoutEnlargement: true, // Don't upscale small images
+        })
+        .webp({ quality: 80 }) // Convert to WebP with 80% quality
+        .toBuffer();
+
+      console.log(`Original size: ${(file.size / 1024 / 1024).toFixed(2)}MB`);
+      console.log(
+        `Compressed size: ${(compressedBuffer.length / 1024 / 1024).toFixed(2)}MB`,
+      );
+
+      // Upload compressed buffer to Cloudinary
+      uploadResponse = await new Promise<any>((resolve, reject) => {
+        const uploadStream = cloudinary.uploader.upload_stream(
+          {
+            folder: "artora/artworks",
+            public_id: `art-${userId}-${Date.now()}`,
+            resource_type: "image",
+            format: "webp",
+          },
+          (error, result) => {
+            if (error) return reject(error);
+            resolve(result);
+          },
+        );
+
+        // Pipe compressed buffer to Cloudinary
+        Readable.from(compressedBuffer).pipe(uploadStream);
       });
-    } catch (uploadErr) {
+    } catch (uploadErr: any) {
+      console.error("Upload error:", uploadErr);
       return res.status(500).json({
         success: false,
         error: "Failed to archive asset in digital cloud. Please try again.",

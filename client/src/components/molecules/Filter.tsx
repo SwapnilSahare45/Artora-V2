@@ -33,7 +33,7 @@ const Filter = () => {
   ];
 
   return (
-    <div className="hidden lg:flex items-center gap-8">
+    <div className="flex flex-wrap items-center gap-8">
       <FilterDropdown
         label="Category"
         options={categoryOptions}
@@ -50,7 +50,7 @@ const Filter = () => {
         paramName="priceRange"
       />
 
-      <div className="h-4 w-px bg-glass mx-2" aria-hidden="true" />
+      <div className="h-4 w-px bg-glass mx-2" />
 
       {/* Sorting */}
       <FilterDropdown label="Sort By" options={sortOptions} paramName="sort" />

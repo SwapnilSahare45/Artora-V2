@@ -57,10 +57,16 @@ export const getAuctionById = async (req: AuthRequest, res: Response) => {
       status: { $in: ["scheduled", "live"] },
     }).populate({
       path: "artworkIds",
-      populate: {
-        path: "artist",
-        select: "firstName lastName avatar",
-      },
+      populate: [
+        {
+          path: "artist",
+          select: "firstName lastName avatar",
+        },
+        {
+          path: "auctionId",
+          select: "endDate",
+        },
+      ],
     });
 
     // If auction not found

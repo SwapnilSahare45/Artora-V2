@@ -37,7 +37,6 @@ const Footer = () => {
               />
               <button
                 type="submit"
-                aria-label="Subscribe to newsletter"
                 className="absolute right-0 bottom-4 text-brand hover:text-white transition-all"
               >
                 <FaArrowRightLong size={20} />
@@ -45,10 +44,7 @@ const Footer = () => {
             </form>
           </div>
 
-          <nav
-            className="grid grid-cols-2 md:grid-cols-3 gap-12"
-            aria-label="Footer Navigation"
-          >
+          <nav className="grid grid-cols-2 md:grid-cols-3 gap-12">
             <div className="space-y-8">
               <h6 className="text-[10px] font-bold uppercase tracking-[0.4em] text-brand">
                 Marketplace
@@ -92,13 +88,13 @@ const Footer = () => {
 
         <div className="py-8 border-y border-glass flex flex-wrap items-center gap-12 mb-12">
           <div className="flex items-center gap-3">
-            <LuUser size={14} className="text-brand" aria-hidden="true" />
+            <LuUser size={14} className="text-brand" />
             <p className="text-[9px] uppercase tracking-[0.3em]">
               Design & Develop: Swapnil Vinod Sahare
             </p>
           </div>
           <div className="flex items-center gap-3">
-            <LuLayers size={14} className="text-brand" aria-hidden="true" />
+            <LuLayers size={14} className="text-brand" />
             <p className="text-[9px] uppercase tracking-[0.3em]">
               Next.js + Node.js + MongoDB
             </p>
@@ -111,24 +107,20 @@ const Footer = () => {
           </p>
           <div className="flex gap-10">
             <Link
-              href="/"
-              aria-label="Artora LinkedIn"
+              href="https://www.linkedin.com/in/swapnil-sahare-06a803318/"
+              target="_blank"
               className="hover:text-brand transition-all"
             >
               <FaLinkedin size={18} />
             </Link>
             <Link
-              href="/"
-              aria-label="Artora GitHub"
+              href="https://github.com/SwapnilSahare45"
+              target="_blank"
               className="hover:text-brand transition-all"
             >
               <FaGithub size={18} />
             </Link>
-            <Link
-              href="/"
-              aria-label="Artora X/Twitter"
-              className="hover:text-brand transition-all"
-            >
+            <Link href="/" className="hover:text-brand transition-all">
               <FaXTwitter size={18} />
             </Link>
           </div>

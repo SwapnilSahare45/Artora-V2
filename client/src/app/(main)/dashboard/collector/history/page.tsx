@@ -163,8 +163,8 @@ const AcquisitionHistoryPage = async () => {
                   )}
 
                   {/* Artwork Info */}
-                  <div className="flex items-center gap-8 w-full lg:w-1/3">
-                    <div className="relative w-28 h-28 shrink-0 border border-glass bg-glass overflow-hidden">
+                  <div className="flex flex-col md:flex-row md:items-center gap-8 w-full lg:w-1/3">
+                    <div className="relative w-full md:w-28 h-28 shrink-0 border border-glass bg-glass overflow-hidden">
                       <Image
                         src={order.artwork.imageURL}
                         alt={order.artwork.title}

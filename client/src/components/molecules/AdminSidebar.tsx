@@ -42,11 +42,7 @@ const AdminSidebar = () => {
       <div className="fixed top-0 left-0 right-0 z-50 lg:hidden backdrop-blur-xl bg-bg-primary/80 border-b border-glass">
         <div className="flex items-center justify-between px-6 py-4">
           <Logo size="sm" />
-          <button
-            onClick={() => setIsOpen(true)}
-            aria-label="Open admin menu"
-            className="text-white"
-          >
+          <button onClick={() => setIsOpen(true)} className="text-white">
             <LuMenu size={26} />
           </button>
         </div>
@@ -128,7 +124,6 @@ const AdminSidebar = () => {
         <button
           onClick={() => setIsOpen(false)}
           className="absolute top-6 right-6 lg:hidden text-dim hover:text-white"
-          aria-label="Close admin menu"
         >
           <LuX size={24} />
         </button>
