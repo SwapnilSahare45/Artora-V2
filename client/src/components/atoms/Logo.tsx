@@ -3,6 +3,7 @@ interface LogoProps {
   className?: string;
 }
 
+// Logo size
 const Logo = ({ size = "md", className = "" }: LogoProps) => {
   const logoSize = {
     xs: "text-[10px]",
