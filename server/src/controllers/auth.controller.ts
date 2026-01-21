@@ -246,6 +246,7 @@ export const login = async (req: Request, res: Response) => {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "none",
+      domain: ".artora.qzz.io",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
@@ -274,6 +275,7 @@ export const logout = async (req: Request, res: Response) => {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "none",
+      domain: ".artora.qzz.io",
       path: "/",
     });
 
