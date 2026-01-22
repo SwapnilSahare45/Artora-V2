@@ -11,6 +11,17 @@ The platform allows _artists_ to **list artworks**, _collectors_ to **buy or bid
 - **Frontend:** [app.artora.qzz.io](https://app.artora.qzz.io) (Vercel)
 - **Backend API:** [api.artora.qzz.io](https://api.artora.qzz.io) (Render)
 
+## 🔑 **Demo Credentials**
+
+To explore the platform without signing up, use the following credentials:
+
+| Role | Email | Password |
+| :--- | :--- | :--- |
+| **👑 Admin** | `admin@artora.com` | `Artora@123` |
+| **🎨 Artist** | `artist1@artora.com` | `Artora@123` |
+| **🛍 Collector** | `collector1@artora.com` | `Artora@123` |
+
+
 ## ✨ **Key Features**
 
 - 🔐 Secure Authentication using **JWT**
